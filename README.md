@@ -123,7 +123,23 @@ free to extend them and make them as complex and powerful as you need to.
    });
    ```
 
-
 ## Design notes
 
-* Keep the API really simple: just functions.
+### Relative files, //-paths, absolute paths, etc.
+
+The only way to get relative paths to work is to use `meta.import.url`. But that
+gives you a `file://` url, e.g.
+`file:///home/silvo/code/ningen/example/BUILD.ts`.
+
+Resolving everything to an absolute path would work. Maybe that's the best idea?
+
+```ts
+const appendRule = rule({
+  name: "append",
+  command: "./append.sh $in $out",
+  srcs: files("append.sh"),
+});
+```
+
+How to get `./append.sh` to execute in the right directory? Maybe needs a
+`cd {dir} && ...` at the start of the command? Yuck.
