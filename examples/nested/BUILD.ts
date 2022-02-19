@@ -9,7 +9,7 @@ import { init } from "../../mod.ts";
 
 // Initialises Ningen and retrieves the functions for defining rules and build
 // targets.
-const { generate } = init(import.meta.url);
+const ng = init(import.meta.url);
 
 // Write the build.ninja file. Can override the output file if you like.
-generate();
+ng.generate();

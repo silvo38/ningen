@@ -1,10 +1,11 @@
 import { assertEquals } from "./deps.ts";
-import { file, files } from "./file.ts";
-import { rule } from "./rule.ts";
+import { Ningen } from "./mod.ts";
+
+const ng = new Ningen("/root");
 
 Deno.test("rule: binary added to srcs", () => {
-  const binary = file("/root", "/root/mybinary");
-  const r = rule({
+  const binary = ng.file("/root/mybinary");
+  const r = ng.rule({
     name: "r",
     command: "c",
     binary,
@@ -14,14 +15,14 @@ Deno.test("rule: binary added to srcs", () => {
 });
 
 Deno.test("rule: existing srcs preserved", () => {
-  const r = rule({
+  const r = ng.rule({
     name: "r",
     command: "c",
-    binary: file("/root", "/root/mybinary"),
-    srcs: files("/root", "/root/mybinary", "/root/existing"),
+    binary: ng.file("/root/mybinary"),
+    srcs: ng.files("/root/mybinary", "/root/existing"),
   });
   assertEquals(
     r.srcs,
-    files("/root", "/root/mybinary", "/root/existing"),
+    ng.files("/root/mybinary", "/root/existing"),
   );
 });

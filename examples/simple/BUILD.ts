@@ -6,18 +6,18 @@ import { File, init } from "../../mod.ts";
 
 // Initialises Ningen and retrieves the functions for defining rules and build
 // targets.
-const { build, rule, file, files, generate } = init(import.meta.url);
+const ng = init(import.meta.url);
 
 // Define a Rule for the `append.sh` script.
-const appendRule = rule({
+const appendRule = ng.rule({
   name: "append",
   command: "./append.sh $in $out",
-  srcs: files("append.sh"),
+  srcs: ng.files("append.sh"),
 });
 
 // Define a helper function that invokes the rule.
 function append(src: File) {
-  build({
+  ng.build({
     rule: appendRule,
     inputs: [src],
     outputs: [src.replaceExtension(".out")],
@@ -25,7 +25,7 @@ function append(src: File) {
 }
 
 // Process a file.
-append(file("foo.txt"));
+append(ng.file("foo.txt"));
 
 // Write the build.ninja file. Can override the output file if you like.
-generate();
+ng.generate();

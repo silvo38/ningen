@@ -1,31 +1,29 @@
 import { assertEquals } from "./deps.ts";
-import { build } from "./build.ts";
-import { rule } from "./rule.ts";
 import { Generator } from "./generate.ts";
-import { file, files } from "./file.ts";
+import { Ningen } from "./mod.ts";
 
-const testRule = rule({
+const ng = new Ningen("/root/dir");
+
+const testRule = ng.rule({
   name: "ttt",
   command: "ttt -o $out $in",
   srcs: [],
 });
 
 Deno.test("Generator: writeRule", () => {
-  const generator = new Generator("/");
-
-  generator.writeRule(rule({ name: "rrr", command: "cmd goes here" }));
+  ng.reset();
+  ng.rule({ name: "rrr", command: "cmd goes here" });
 
   assertEquals(
-    generator.toString(),
+    ng.generateToString().trimEnd(),
     `rule rrr
   command = cmd goes here`,
   );
 });
 
 Deno.test("Generator: writeRule: string vars", () => {
-  const generator = new Generator("/");
-
-  generator.writeRule(rule({
+  ng.reset();
+  ng.rule({
     name: "rrr",
     command: "cmd goes here",
     vars: {
@@ -33,10 +31,10 @@ Deno.test("Generator: writeRule: string vars", () => {
       b: "bbb",
       a: "aaa",
     },
-  }));
+  });
 
   assertEquals(
-    generator.toString(),
+    ng.generateToString().trimEnd(),
     `rule rrr
   command = cmd goes here
   c = ccc
@@ -46,53 +44,53 @@ Deno.test("Generator: writeRule: string vars", () => {
 });
 
 Deno.test("Generator: writeRule: file vars", () => {
-  const generator = new Generator("/root");
-
-  generator.writeRule(rule({
+  ng.reset();
+  ng.rule({
     name: "rrr",
     command: "cmd goes here",
     vars: {
-      c: file("/", "/root/ccc"),
-      b: file("/", "/abs/bbb"),
-      a: file("/", "/root/nested/aaa"),
+      c: ng.file("/root/dir/ccc"),
+      b: ng.file("/abs/bbb"),
+      a: ng.file("/root/dir/nested/aaa"),
     },
-  }));
+  });
 
   assertEquals(
-    generator.toString(),
+    ng.generateToString().trimEnd(),
     `rule rrr
   command = cmd goes here
   c = ccc
-  b = ../abs/bbb
+  b = ../../abs/bbb
   a = nested/aaa`,
   );
 });
 
 Deno.test("Generator: writeRule: $binary substitution", () => {
+  ng.reset();
   const generator = new Generator("/root/dir");
 
-  generator.writeRule(rule({
+  generator.writeRule(ng.rule({
     name: "rrr",
     command: "something $binary something",
-    binary: file("/", "/root/dir/mybinary"),
+    binary: ng.file("/root/dir/mybinary"),
   }));
 
   assertEquals(
-    generator.toString(),
+    ng.generateToString().trimEnd(),
     `rule rrr
   command = something ./mybinary something`,
   );
 });
 
 // Deno.test("Generator: writeRule: generator", () => {
-//   const generator = new Generator("/");
+//
 
 //   generator.writeRule(
-//     rule({ name: "rrr", command: "cmd goes here", generator: true }),
+//     ng.rule({ name: "rrr", command: "cmd goes here", generator: true }),
 //   );
 
 //   assertEquals(
-//     generator.toString(),
+//     ng.generateToString().trimEnd(),
 //     `rule rrr
 //   command = cmd goes here
 //   generator = 1`,
@@ -100,14 +98,14 @@ Deno.test("Generator: writeRule: $binary substitution", () => {
 // });
 
 // Deno.test("Generator: writeRule: depfile", () => {
-//   const generator = new Generator("/");
+//
 
 //   generator.writeRule(
-//     rule({ name: "rrr", command: "cmd", depfile: "$out.d" }),
+//     ng.rule({ name: "rrr", command: "cmd", depfile: "$out.d" }),
 //   );
 
 //   assertEquals(
-//     generator.toString(),
+//     ng.generateToString().trimEnd(),
 //     `rule rrr
 //   command = cmd
 //   depfile = $out.d
@@ -116,77 +114,78 @@ Deno.test("Generator: writeRule: $binary substitution", () => {
 // });
 
 Deno.test("Generator: writeTarget: single input and output", () => {
-  const generator = new Generator("/");
+  ng.reset();
+  ng.build({
+    rule: testRule,
+    inputs: ng.files("i"),
+    outputs: ng.files("o"),
+  });
 
-  generator.writeTarget(
-    build({
-      rule: testRule,
-      inputs: files("/", "i"),
-      outputs: files("/", "o"),
-    }),
-  );
-
-  assertEquals(generator.toString(), `build o: ttt i`);
+  assertEquals(ng.generateToString().trim(), `build o: ttt i`);
 });
 
 Deno.test("Generator: writeTarget: multiple inputs and outputs", () => {
-  const generator = new Generator("/");
+  ng.reset();
+  ng.build({
+    rule: testRule,
+    inputs: ng.files("i1", "i2"),
+    outputs: ng.files("o1", "o2"),
+  });
 
-  generator.writeTarget(
-    build({
-      rule: testRule,
-      inputs: files("/", "i1", "//i2"),
-      outputs: files("/", "o1", "//o2"),
-    }),
+  assertEquals(
+    ng.generateToString().trim(),
+    `build o1 o2: ttt i1 i2`,
   );
-
-  assertEquals(generator.toString(), `build o1 o2: ttt i1 i2`);
 });
 
 Deno.test("Generator: writeTarget: with implicit inputs", () => {
-  const r = rule({ name: "r", command: "c", srcs: files("/", "x1", "x2") });
-  const generator = new Generator("/");
+  ng.reset();
+  const r = ng.rule({
+    name: "r",
+    command: "c",
+    srcs: ng.files("x1", "x2"),
+  });
 
-  generator.writeTarget(
-    build({
-      rule: r,
-      inputs: files("/", "i"),
-      outputs: files("/", "o"),
-    }),
+  ng.build({
+    rule: r,
+    inputs: ng.files("i"),
+    outputs: ng.files("o"),
+  });
+
+  assertEquals(
+    ng.generateToString().trimEnd(),
+    `
+rule r
+  command = c
+
+build o: r i | x1 x2
+`.trim(),
   );
-
-  assertEquals(generator.toString(), `build o: r i | x1 x2`);
 });
 
 Deno.test("Generator: write", () => {
-  const rules = [
-    rule({ name: "r0", command: "c0" }),
-    rule({ name: "r1", command: "c1" }),
-    rule({ name: "r2", command: "c2" }),
-  ];
-  const targets = [
-    build({
-      rule: rules[0],
-      inputs: files("/", "i0"),
-      outputs: files("/", "o0"),
-    }),
-    build({
-      rule: rules[1],
-      inputs: files("/", "i1"),
-      outputs: files("/", "o1"),
-    }),
-    build({
-      rule: rules[2],
-      inputs: files("/", "i2"),
-      outputs: files("/", "o2"),
-    }),
-  ];
-
-  const generator = new Generator("/");
-  generator.write(rules, targets);
+  ng.reset();
+  const rule0 = ng.rule({ name: "r0", command: "c0" });
+  const rule1 = ng.rule({ name: "r1", command: "c1" });
+  const rule2 = ng.rule({ name: "r2", command: "c2" });
+  ng.build({
+    rule: rule0,
+    inputs: ng.files("i0"),
+    outputs: ng.files("o0"),
+  });
+  ng.build({
+    rule: rule1,
+    inputs: ng.files("i1"),
+    outputs: ng.files("o1"),
+  });
+  ng.build({
+    rule: rule2,
+    inputs: ng.files("i2"),
+    outputs: ng.files("o2"),
+  });
 
   assertEquals(
-    generator.toString(),
+    ng.generateToString().trimEnd(),
     `
 rule r0
   command = c0
@@ -198,59 +197,50 @@ rule r2
 build o0: r0 i0
 build o1: r1 i1
 build o2: r2 i2
-`.trimStart(),
+`.trim(),
   );
 });
 
 Deno.test("Generator: write: rules written in sorted order", () => {
-  const rules = [
-    rule({ name: "rrr2", command: "cmd goes here" }),
-    rule({ name: "rrr1", command: "cmd goes here" }),
-  ];
-
-  const generator = new Generator("/");
-  generator.write(rules, []);
+  ng.reset();
+  ng.rule({ name: "rrr2", command: "cmd goes here" });
+  ng.rule({ name: "rrr1", command: "cmd goes here" });
 
   assertEquals(
-    generator.toString(),
+    ng.generateToString().trimEnd(),
     `
 rule rrr1
   command = cmd goes here
 rule rrr2
   command = cmd goes here
-
-`.trimStart(),
+`.trim(),
   );
 });
 
 Deno.test("Generator: write: targets written in original order", () => {
-  const r = rule({
+  ng.reset();
+  const r = ng.rule({
     name: "ttt",
     command: "ttt",
   });
-  const targets = [
-    build({
-      rule: testRule,
-      inputs: files("/", "i3"),
-      outputs: files("/", "o3"),
-    }),
-    build({
-      rule: testRule,
-      inputs: files("/", "i2"),
-      outputs: files("/", "o2"),
-    }),
-    build({
-      rule: testRule,
-      inputs: files("/", "i1"),
-      outputs: files("/", "o1"),
-    }),
-  ];
-
-  const generator = new Generator("/");
-  generator.write([r], targets);
+  ng.build({
+    rule: testRule,
+    inputs: ng.files("i3"),
+    outputs: ng.files("o3"),
+  });
+  ng.build({
+    rule: testRule,
+    inputs: ng.files("i2"),
+    outputs: ng.files("o2"),
+  });
+  ng.build({
+    rule: testRule,
+    inputs: ng.files("i1"),
+    outputs: ng.files("o1"),
+  });
 
   assertEquals(
-    generator.toString(),
+    ng.generateToString().trimEnd(),
     `
 rule ttt
   command = ttt
@@ -258,6 +248,6 @@ rule ttt
 build o3: ttt i3
 build o2: ttt i2
 build o1: ttt i1
-`.trimStart(),
+`.trim(),
   );
 });

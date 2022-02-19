@@ -6,9 +6,9 @@ import { append } from "../tools/builddefs.ts";
 
 // Initialises Ningen and retrieves the functions for defining rules and build
 // targets.
-const { file } = init(import.meta.url);
+const ng = init(import.meta.url);
 
 // Process a file.
-append(file("foo.txt"));
+append(ng.file("foo.txt"));
 
 // Don't call generate() here, it's called from ../BUILD.ts instead.
