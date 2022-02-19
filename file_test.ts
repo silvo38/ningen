@@ -27,6 +27,13 @@ Deno.test("file: getRelativePath: returns relative path", () => {
   assertEquals(f.getRelativePath("/root/dir"), "x.txt");
 });
 
+Deno.test("file: withSuffix: returns new file with suffix", () => {
+  const f = file("/root/dir", "x.txt").withSuffix(".out");
+
+  assertEquals(f.getAbsolutePath(), "/root/dir/x.txt.out");
+  assertEquals(f.getRelativePath("/root/dir"), "x.txt.out");
+});
+
 Deno.test("files: converts a single path", () => {
   assertEquals(
     getPaths(files("/root/dir", "x.txt")),

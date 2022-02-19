@@ -6,11 +6,15 @@ export function generate(
   directory: string,
   rules: readonly Rule[],
   targets: readonly Target[],
+  filename: string,
 ) {
   const generator = new Generator(directory);
-
   generator.write(rules, targets);
+  Deno.writeTextFileSync(filename, generator.toString());
 }
+
+/** Generates a ninja build file. Default filename is `build.ninja`. */
+export type GenerateFn = (filename?: string) => void;
 
 export class Generator {
   private readonly output: string[] = [];

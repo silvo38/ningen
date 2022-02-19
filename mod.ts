@@ -1,18 +1,18 @@
 import { path } from "./deps.ts";
 import { build, BuildFn, Target } from "./build.ts";
-import { file, FileFn, files, FilesFn } from "./file.ts";
+import { File, file, FileFn, files, FilesFn } from "./file.ts";
 import { Rule, rule, RuleFn } from "./rule.ts";
-import { generate } from "./generate.ts";
+import { generate, GenerateFn } from "./generate.ts";
 
-export interface NingenFns {
+export { File, Target };
+
+interface NingenFns {
   rule: RuleFn;
   build: BuildFn;
   file: FileFn;
   files: FilesFn;
   generate: GenerateFn;
 }
-
-export type GenerateFn = () => void;
 
 /**
  * Initialises Ningen.
@@ -36,10 +36,10 @@ export function init(importUrl: string): NingenFns {
     build: (opts) => {
       const t = build(opts);
       targets.push(t);
-      return t;
     },
     file: (filename) => file(directory, filename),
     files: (...filenames) => files(directory, ...filenames),
-    generate: () => generate(directory, rules, targets),
+    generate: (filename) =>
+      generate(directory, rules, targets, filename ?? "build.ninja"),
   };
 }

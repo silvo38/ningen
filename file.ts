@@ -18,6 +18,10 @@ export class File {
   getRelativePath(directory: string): string {
     return path.relative(directory, this.path);
   }
+
+  withSuffix(suffix: string): File {
+    return new File(this.path + suffix);
+  }
 }
 
 export type Files = readonly File[];

@@ -2,27 +2,30 @@
 // The shebang above lets you execute this BUILD.ts file directly.
 
 // TODO: Give real deno.land URL.
-import { init } from "../mod.ts";
+import { File, init, Target } from "../mod.ts";
 
 // Initialises Ningen and retrieves the functions for defining rules and build
 // targets.
-const { build, rule, file, generate } = init(import.meta.url);
+const { build, rule, file, files, generate } = init(import.meta.url);
 
+// Define a Rule for the `append.sh` script.
 const appendRule = rule({
   name: "append",
   command: "./append.sh $in $out",
-  srcs: [file("append.sh")],
+  srcs: files("append.sh"),
 });
 
-// function append(src: string): Target {
-//   return ng.build({
-//     rule: appendRule,
-//     inputs: [src],
-//     outputs: [src + ".out"],
-//   });
-// }
+// Define a helper function that invokes the rule.
+function append(src: File) {
+  build({
+    rule: appendRule,
+    inputs: [src],
+    outputs: [src.withSuffix(".out")],
+  });
+}
 
-// const processed = append("abc.txt");
+// Process a file.
+append(file("abc.txt"));
 
-// Write the build.ninja file.
+// Write the build.ninja file. Can override the output file if you like.
 generate();

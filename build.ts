@@ -7,7 +7,7 @@ export type BuildFn = (
     inputs: Files;
     outputs: Files;
   },
-) => Target;
+) => void;
 
 export class Target {
   constructor(
