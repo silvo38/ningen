@@ -2,7 +2,7 @@
 // The shebang above lets you execute this BUILD.ts file directly.
 
 // TODO: Give real deno.land URL.
-import { File, init, Target } from "../mod.ts";
+import { File, init } from "../../mod.ts";
 
 // Initialises Ningen and retrieves the functions for defining rules and build
 // targets.
@@ -20,12 +20,12 @@ function append(src: File) {
   build({
     rule: appendRule,
     inputs: [src],
-    outputs: [src.withSuffix(".out")],
+    outputs: [src.replaceExtension(".out")],
   });
 }
 
 // Process a file.
-append(file("abc.txt"));
+append(file("foo.txt"));
 
 // Write the build.ninja file. Can override the output file if you like.
 generate();

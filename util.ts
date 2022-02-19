@@ -1,3 +1,5 @@
+import { path } from "./deps.ts";
+
 /**
  * Returns a sorted copy of an iterable. Optionally provide a `keyFn` that will
  * be used when sorting.
@@ -23,4 +25,15 @@ export function sorted<T>(
     copy.sort();
   }
   return copy;
+}
+
+/** Converts `foo` to `./foo` (and leaves absolute paths alone). */
+export function addLeadingDotSlash(
+  filename: string,
+): string {
+  if (path.isAbsolute(filename) || filename.startsWith(".")) {
+    return filename;
+  } else {
+    return "./" + filename;
+  }
 }

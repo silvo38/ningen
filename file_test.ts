@@ -27,11 +27,34 @@ Deno.test("file: getRelativePath: returns relative path", () => {
   assertEquals(f.getRelativePath("/root/dir"), "x.txt");
 });
 
-Deno.test("file: withSuffix: returns new file with suffix", () => {
-  const f = file("/root/dir", "x.txt").withSuffix(".out");
+Deno.test("file: addSuffix: returns new file with suffix", () => {
+  const f = file("/root/dir", "x.txt").addSuffix(".out");
 
   assertEquals(f.getAbsolutePath(), "/root/dir/x.txt.out");
   assertEquals(f.getRelativePath("/root/dir"), "x.txt.out");
+});
+
+Deno.test("file: replaceExtension: swaps extension", () => {
+  const f = file("/root/dir", "x.txt").replaceExtension(".out");
+
+  assertEquals(f.getAbsolutePath(), "/root/dir/x.out");
+  assertEquals(f.getRelativePath("/root/dir"), "x.out");
+});
+
+Deno.test("file: replaceExtension: throws if file has no extension", () => {
+  assertThrows(
+    () => file("/root/dir", "x").replaceExtension(".out"),
+    Error,
+    "File has no extension",
+  );
+});
+
+Deno.test("file: replaceExtension: throws if extension does not start with a dot", () => {
+  assertThrows(
+    () => file("/root/dir", "x.txt").replaceExtension("out"),
+    Error,
+    "Extension must start with a dot",
+  );
 });
 
 Deno.test("files: converts a single path", () => {

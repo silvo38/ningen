@@ -1,5 +1,5 @@
 import { assertEquals } from "./deps.ts";
-import { sorted } from "./util.ts";
+import { addLeadingDotSlash, sorted } from "./util.ts";
 
 Deno.test("util: sorted: no keyFn", () => {
   assertEquals(sorted(["c", "a", "b", "a"]), ["a", "a", "b", "c"]);
@@ -20,4 +20,12 @@ Deno.test("util: sorted: keyFn", () => {
       { num: 1, text: "c" },
     ],
   );
+});
+
+Deno.test("util: addLeadingDotSlash", () => {
+  assertEquals(addLeadingDotSlash("foo"), "./foo");
+  assertEquals(addLeadingDotSlash("foo/bar"), "./foo/bar");
+  assertEquals(addLeadingDotSlash("/foo"), "/foo");
+  assertEquals(addLeadingDotSlash("./foo"), "./foo");
+  assertEquals(addLeadingDotSlash("../foo"), "../foo");
 });

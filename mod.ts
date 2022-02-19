@@ -14,6 +14,10 @@ interface NingenFns {
   generate: GenerateFn;
 }
 
+// Static. Accumulated across all modules that call this.
+const rules: Rule[] = [];
+const targets: Target[] = [];
+
 /**
  * Initialises Ningen.
  *
@@ -24,9 +28,6 @@ interface NingenFns {
  */
 export function init(importUrl: string): NingenFns {
   const directory = path.dirname(path.fromFileUrl(importUrl));
-  const rules: Rule[] = [];
-  const targets: Target[] = [];
-
   return {
     rule: (opts) => {
       const r = rule(opts);

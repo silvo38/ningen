@@ -2,7 +2,7 @@ import { assertEquals } from "./deps.ts";
 import { build } from "./build.ts";
 import { rule } from "./rule.ts";
 import { Generator } from "./generate.ts";
-import { files } from "./file.ts";
+import { file, files } from "./file.ts";
 
 const testRule = rule({
   name: "ttt",
@@ -19,6 +19,68 @@ Deno.test("Generator: writeRule", () => {
     generator.toString(),
     `rule rrr
   command = cmd goes here`,
+  );
+});
+
+Deno.test("Generator: writeRule: string vars", () => {
+  const generator = new Generator("/");
+
+  generator.writeRule(rule({
+    name: "rrr",
+    command: "cmd goes here",
+    vars: {
+      c: "ccc",
+      b: "bbb",
+      a: "aaa",
+    },
+  }));
+
+  assertEquals(
+    generator.toString(),
+    `rule rrr
+  command = cmd goes here
+  c = ccc
+  b = bbb
+  a = aaa`,
+  );
+});
+
+Deno.test("Generator: writeRule: file vars", () => {
+  const generator = new Generator("/root");
+
+  generator.writeRule(rule({
+    name: "rrr",
+    command: "cmd goes here",
+    vars: {
+      c: file("/", "/root/ccc"),
+      b: file("/", "/abs/bbb"),
+      a: file("/", "/root/nested/aaa"),
+    },
+  }));
+
+  assertEquals(
+    generator.toString(),
+    `rule rrr
+  command = cmd goes here
+  c = ccc
+  b = ../abs/bbb
+  a = nested/aaa`,
+  );
+});
+
+Deno.test("Generator: writeRule: $binary substitution", () => {
+  const generator = new Generator("/root/dir");
+
+  generator.writeRule(rule({
+    name: "rrr",
+    command: "something $binary something",
+    binary: file("/", "/root/dir/mybinary"),
+  }));
+
+  assertEquals(
+    generator.toString(),
+    `rule rrr
+  command = something ./mybinary something`,
   );
 });
 

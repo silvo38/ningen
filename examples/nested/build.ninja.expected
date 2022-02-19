@@ -1,0 +1,4 @@
+rule append
+  command = ./tools/append.sh $in $out
+
+build subdir/foo.out: append subdir/foo.txt | tools/append.sh

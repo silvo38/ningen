@@ -1,4 +1,0 @@
-rule append
-  command = ./append.sh $in $out
-
-build abc.txt.out: append abc.txt | append.sh
