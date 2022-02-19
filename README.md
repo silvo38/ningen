@@ -1,7 +1,5 @@
 # Ningen: a simple Ninja build generator
 
-## OLD!!! New version of ningen is at https://github.com/silvo38/ningen
-
 Ningen is a work-in-progress build generator for
 [Ninja](https://ninja-build.org).
 
@@ -18,6 +16,8 @@ free to extend them and make them as complex and powerful as you need to.
    you.
 
 ## Getting started
+
+**TODO:** Update these instructions when the new API works.
 
 (Also take a look at the [examples](examples/) folder.)
 
@@ -122,3 +122,8 @@ free to extend them and make them as complex and powerful as you need to.
      outputs: ["everything.out"],
    });
    ```
+
+
+## Design notes
+
+* Keep the API really simple: just functions.
