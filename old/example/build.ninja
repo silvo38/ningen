@@ -1,0 +1,8 @@
+rule append
+  command = ./append.sh $in $out
+rule ningen
+  command = ./BUILD.ts
+  generator = 1
+
+build abc.txt.out: append abc.txt | append.sh
+build build.ninja: ningen BUILD.ts
