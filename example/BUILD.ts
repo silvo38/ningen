@@ -8,8 +8,6 @@ import { init } from "../mod.ts";
 // targets.
 const { build, rule, file, generate } = init(import.meta.url);
 
-console.log(file("append.sh"));
-
 const appendRule = rule({
   name: "append",
   command: "./append.sh $in $out",

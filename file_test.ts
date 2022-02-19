@@ -1,43 +1,49 @@
-import {
-  assertEquals,
-  assertThrows,
-} from "https://deno.land/std@0.88.0/testing/asserts.ts";
-import { Files, init } from "./mod.ts";
-
-const { file, files } = init("file:///root/dir/BUILD.ts");
+import { assertEquals, assertThrows } from "./deps.ts";
+import { file, Files, files } from "./file.ts";
 
 function getPaths(files: Files) {
-  return files.map((f) => f.path);
+  return files.map((f) => f.getAbsolutePath());
 }
 
 Deno.test("file: keeps absolute path", () => {
   assertEquals(
-    file("/a/b/c.txt").path,
+    file("/root/dir", "/a/b/c.txt").getAbsolutePath(),
     "/a/b/c.txt",
   );
 });
 
 Deno.test("file: converts relative path", () => {
   assertEquals(
-    file("x.txt").path,
+    file("/root/dir", "x.txt").getAbsolutePath(),
     "/root/dir/x.txt",
   );
 });
 
+Deno.test("file: getRelativePath: returns relative path", () => {
+  const f = file("/root/dir", "x.txt");
+
+  assertEquals(f.getRelativePath("/"), "root/dir/x.txt");
+  assertEquals(f.getRelativePath("/root"), "dir/x.txt");
+  assertEquals(f.getRelativePath("/root/dir"), "x.txt");
+});
+
 Deno.test("files: converts a single path", () => {
   assertEquals(
-    getPaths(files("x.txt")),
+    getPaths(files("/root/dir", "x.txt")),
     ["/root/dir/x.txt"],
   );
 });
 
 Deno.test("files: converts a single array of paths", () => {
   assertEquals(
-    getPaths(files([
-      "a.txt",
-      "b.txt",
-      "c.txt",
-    ])),
+    getPaths(files(
+      "/root/dir",
+      [
+        "a.txt",
+        "b.txt",
+        "c.txt",
+      ],
+    )),
     [
       "/root/dir/a.txt",
       "/root/dir/b.txt",
@@ -49,6 +55,7 @@ Deno.test("files: converts a single array of paths", () => {
 Deno.test("files: converts a vararg list of paths", () => {
   assertEquals(
     getPaths(files(
+      "/root/dir",
       "a.txt",
       "b.txt",
       "c.txt",
@@ -65,6 +72,7 @@ Deno.test("files: throws for a nested list", () => {
   assertThrows(
     () =>
       getPaths(files(
+        "/root/dir",
         "a.txt",
         ["b.txt", "c.txt"],
       )),
