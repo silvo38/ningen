@@ -4,7 +4,8 @@
 // Import nested BUILD.ts files for side-effects.
 import "./subdir/BUILD.ts";
 
-// TODO: Give real deno.land URL.
+// In your own code, use this instead:
+// import { init } from "https://deno.land/x/ningen";
 import { init } from "../../mod.ts";
 
 // Initialises Ningen and retrieves the functions for defining rules and build

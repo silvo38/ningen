@@ -8,6 +8,8 @@ TypeScript API, and it generates a `build.ninja` file for you. The build files
 are just regular TypeScript files, run with [Deno](https://deno.land), so you're
 free to extend them and make them as complex and powerful as you need to.
 
+Released at https://deno.land/x/ningen.
+
 ## Installation
 
 1. Install Deno: https://deno.land
@@ -123,23 +125,10 @@ free to extend them and make them as complex and powerful as you need to.
    });
    ```
 
-## Design notes
+## Developer notes
 
-### Relative files, //-paths, absolute paths, etc.
+Run `deno test` to run the unit tests.
 
-The only way to get relative paths to work is to use `meta.import.url`. But that
-gives you a `file://` url, e.g.
-`file:///home/silvo/code/ningen/example/BUILD.ts`.
+Run `./test.sh` to run the unit tests, and test the example folders.
 
-Resolving everything to an absolute path would work. Maybe that's the best idea?
-
-```ts
-const appendRule = rule({
-  name: "append",
-  command: "./append.sh $in $out",
-  srcs: files("append.sh"),
-});
-```
-
-How to get `./append.sh` to execute in the right directory? Maybe needs a
-`cd {dir} && ...` at the start of the command? Yuck.
+See [RELEASING.md] for instructions on deploying a new release.
