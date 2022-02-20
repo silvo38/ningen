@@ -15,6 +15,7 @@ export class Rule {
     readonly binary: File | null,
     readonly srcs: Files,
     readonly vars: Vars,
+    readonly generator: boolean,
   ) {}
 }
 
@@ -46,7 +47,7 @@ export class Ningen {
   constructor(private readonly directory: string) {}
 
   rule(
-    { name, command, binary, srcs, vars }: {
+    { name, command, binary, srcs, vars, generator }: {
       /** The name for the rule. */
       name: string;
       /** The shell command to invoke. */
@@ -63,6 +64,8 @@ export class Ningen {
        * used in the command, and can be overridden in individual build targets.
        */
       vars?: Vars;
+      /** Defines this rule as a generator rule. Defaults to false. */
+      generator?: boolean;
     },
   ): Rule {
     srcs = srcs ?? [];
@@ -73,7 +76,14 @@ export class Ningen {
         srcs = [...srcs, binary];
       }
     }
-    const r = new Rule(name, command, binary ?? null, srcs, vars);
+    const r = new Rule(
+      name,
+      command,
+      binary ?? null,
+      srcs,
+      vars,
+      generator ?? false,
+    );
     rules.push(r);
     return r;
   }

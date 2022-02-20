@@ -28,13 +28,13 @@ export class Generator {
     this.addLine(`rule ${rule.name}`);
     this.addLine(`command = ${rule.command}`, 1);
     this.writeVars(rule.vars);
-    // if (rule.generator) {
-    //   this.addLine(`generator = 1`, 1);
-    // }
     // if (rule.depfile) {
     //   this.addLine(`depfile = ${rule.depfile}`, 1);
     //   this.addLine(`deps = gcc`, 1);
     // }
+    if (rule.generator) {
+      this.addLine(`generator = 1`, 1);
+    }
   }
 
   writeTarget(target: Target) {

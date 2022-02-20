@@ -87,18 +87,18 @@ rule rrr
   );
 });
 
-// Deno.test("generate: writeRule: generator", () => {
-//     ng.rule({ name: "rrr", command: "cmd goes here", generator: true }),
-//   );
-//   assertEquals(
-//     ng.generateToString().trim(),
-//     `
-// rule rrr
-//   command = cmd goes here
-//   generator = 1
-// `.trim(),
-//   );
-// });
+Deno.test("generate: writeRule: generator", () => {
+  ng.reset();
+  ng.rule({ name: "rrr", command: "cmd goes here", generator: true });
+  assertEquals(
+    ng.generateToString().trim(),
+    `
+rule rrr
+  command = cmd goes here
+  generator = 1
+`.trim(),
+  );
+});
 
 // Deno.test("generate: writeRule: depfile", () => {
 //     ng.rule({ name: "rrr", command: "cmd", depfile: "$out.d" }),
