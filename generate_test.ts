@@ -9,7 +9,7 @@ const testRule = ng.rule({
   srcs: [],
 });
 
-Deno.test("Generator: writeRule", () => {
+Deno.test("generate: writeRule", () => {
   ng.reset();
   ng.rule({ name: "rrr", command: "cmd goes here" });
 
@@ -20,7 +20,7 @@ Deno.test("Generator: writeRule", () => {
   );
 });
 
-Deno.test("Generator: writeRule: string vars", () => {
+Deno.test("generate: writeRule: string vars", () => {
   ng.reset();
   ng.rule({
     name: "rrr",
@@ -42,7 +42,7 @@ Deno.test("Generator: writeRule: string vars", () => {
   );
 });
 
-Deno.test("Generator: writeRule: file vars", () => {
+Deno.test("generate: writeRule: file vars", () => {
   ng.reset();
   ng.rule({
     name: "rrr",
@@ -64,7 +64,7 @@ Deno.test("Generator: writeRule: file vars", () => {
   );
 });
 
-Deno.test("Generator: writeRule: binary does not appear in rule def", () => {
+Deno.test("generate: writeRule: binary does not appear in rule def", () => {
   ng.reset();
   ng.rule({
     name: "rrr",
@@ -81,7 +81,7 @@ rule rrr
   );
 });
 
-// Deno.test("Generator: writeRule: generator", () => {
+// Deno.test("generate: writeRule: generator", () => {
 //     ng.rule({ name: "rrr", command: "cmd goes here", generator: true }),
 //   );
 //   assertEquals(
@@ -92,7 +92,7 @@ rule rrr
 //   );
 // });
 
-// Deno.test("Generator: writeRule: depfile", () => {
+// Deno.test("generate: writeRule: depfile", () => {
 //     ng.rule({ name: "rrr", command: "cmd", depfile: "$out.d" }),
 //   );
 //   assertEquals(
@@ -104,7 +104,7 @@ rule rrr
 //   );
 // });
 
-Deno.test("Generator: writeTarget: single input and output", () => {
+Deno.test("generate: writeTarget: single input and output", () => {
   ng.reset();
   ng.build({
     rule: testRule,
@@ -115,7 +115,7 @@ Deno.test("Generator: writeTarget: single input and output", () => {
   assertEquals(ng.generateToString().trim(), `build o: ttt i`);
 });
 
-Deno.test("Generator: writeTarget: multiple inputs and outputs", () => {
+Deno.test("generate: writeTarget: multiple inputs and outputs", () => {
   ng.reset();
   ng.build({
     rule: testRule,
@@ -129,7 +129,7 @@ Deno.test("Generator: writeTarget: multiple inputs and outputs", () => {
   );
 });
 
-Deno.test("Generator: writeTarget: with implicit inputs", () => {
+Deno.test("generate: writeTarget: with implicit inputs", () => {
   ng.reset();
   const r = ng.rule({
     name: "r",
@@ -154,7 +154,7 @@ build o: r i | x1 x2
   );
 });
 
-Deno.test("Generator: writeTarget: vars", () => {
+Deno.test("generate: writeTarget: vars", () => {
   ng.reset();
   ng.build({
     rule: testRule,
@@ -176,7 +176,7 @@ build o: ttt i
   );
 });
 
-Deno.test("Generator: writeRule: binary added to vars", () => {
+Deno.test("generate: writeRule: binary added to vars", () => {
   ng.reset();
   const r = ng.rule({
     name: "r",
@@ -200,7 +200,7 @@ build o: r i | mybinary
   );
 });
 
-Deno.test("Generator: write", () => {
+Deno.test("generate: write", () => {
   ng.reset();
   const rule0 = ng.rule({ name: "r0", command: "c0" });
   const rule1 = ng.rule({ name: "r1", command: "c1" });
@@ -238,7 +238,7 @@ build o2: r2 i2
   );
 });
 
-Deno.test("Generator: write: rules written in sorted order", () => {
+Deno.test("generate: write: rules written in sorted order", () => {
   ng.reset();
   ng.rule({ name: "rrr2", command: "cmd goes here" });
   ng.rule({ name: "rrr1", command: "cmd goes here" });
@@ -254,9 +254,9 @@ rule rrr2
   );
 });
 
-Deno.test("Generator: write: targets written in original order", () => {
+Deno.test("generate: write: targets written in original order", () => {
   ng.reset();
-  const r = ng.rule({
+  ng.rule({
     name: "ttt",
     command: "ttt",
   });

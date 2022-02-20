@@ -1,5 +1,5 @@
 import { Rule, Target, Vars } from "./mod.ts";
-import { addLeadingDotSlash, sorted } from "./util.ts";
+import { sorted } from "./util.ts";
 
 export class Generator {
   private readonly output: string[] = [];
@@ -25,16 +25,8 @@ export class Generator {
   }
 
   writeRule(rule: Rule) {
-    let command = rule.command;
-    // if (rule.binary != null) {
-    //   const binaryPath = addLeadingDotSlash(
-    //     rule.binary.getRelativePath(this.directory),
-    //   );
-    //   command = command.replace(/\$binary\b/, binaryPath);
-    // }
-
     this.addLine(`rule ${rule.name}`);
-    this.addLine(`command = ${command}`, 1);
+    this.addLine(`command = ${rule.command}`, 1);
     this.writeVars(rule.vars);
     // if (rule.generator) {
     //   this.addLine(`generator = 1`, 1);
