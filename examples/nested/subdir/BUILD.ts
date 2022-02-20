@@ -1,4 +1,4 @@
-// TODO: Give real deno.land URL.
+// In your own code, use: import { init } from "https://deno.land/x/ningen";
 import { init } from "../../../mod.ts";
 
 // Import append rule from other file.

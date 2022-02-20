@@ -1,4 +1,4 @@
-// TODO: Give real deno.land URL.
+// In your own code, use: import { init } from "https://deno.land/x/ningen";
 import { File, init } from "../../../mod.ts";
 
 const ng = init(import.meta.url);
@@ -6,7 +6,6 @@ const ng = init(import.meta.url);
 // Define a Rule for the `append.sh` script.
 const appendRule = ng.rule({
   name: "append",
-  // TODO: Need a way of getting filename for append.sh!!
   command: "$binary $in $out",
   binary: ng.file("append.sh"),
 });

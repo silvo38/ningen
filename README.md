@@ -39,24 +39,24 @@ Released at https://deno.land/x/ningen.
 3. Import the `root` function from Ningen, and add the following skeleton:
 
    ```typescript
-   import { root } from "https://gitlab.com/silvo/ningen/-/raw/master/mod.ts";
+   import { init } from "https://deno.land/x/ningen";
 
-   root((ng) => {
-     // Rules and targets go here.
+   // import.meta.url is a necessary hack in order to use relative file paths.
+   const ng = init(import.meta.url);
 
-     ng.generate();
+   // Rules and targets go here.
+
+   // Generate the build.ninja file.
+   ng.generate();
    });
    ```
 
-   The `root` function will pass a `Builder` instance (conventionally called
-   `ng`, short for "ningen") to its callback. That builder lets you define Ninja
-   rules and targets. The Ningen API for those looks very similar to the Ninja
-   syntax.
+   The `init` function will return a `Ningen` instance (conventionally called
+   `ng`, short for "ningen"). That class lets you define Ninja rules and
+   targets. The Ningen API for those looks very similar to the Ninja syntax.
 
    Be sure to call the `generate` method at the very end to generate the
-   `build.ninja` file. By default it will define a generator rule called
-   `ningen` that will cause Ninja to regenerate the `build.ninja` file if the
-   `BUILD.ts` file changes (this behaviour can be overridden).
+   `build.ninja` file.
 
 4. Define Ninja rules using the `rule` method. e.g. this rule invokes a shell
    script called `append.sh`:
@@ -64,8 +64,8 @@ Released at https://deno.land/x/ningen.
    ```typescript
    const appendRule = ng.rule({
      name: "append",
-     command: "./append.sh $in $out",
-     implicit: ["append.sh"],
+     command: "$binary $in $out",
+     binary: ng.file("append.sh"),
    });
    ```
 

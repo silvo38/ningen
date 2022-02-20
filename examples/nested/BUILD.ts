@@ -4,8 +4,7 @@
 // Import nested BUILD.ts files for side-effects.
 import "./subdir/BUILD.ts";
 
-// In your own code, use this instead:
-// import { init } from "https://deno.land/x/ningen";
+// In your own code, use: import { init } from "https://deno.land/x/ningen";
 import { init } from "../../mod.ts";
 
 // Initialises Ningen and retrieves the functions for defining rules and build

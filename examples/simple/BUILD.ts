@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write --unstable
 // The shebang above lets you execute this BUILD.ts file directly.
 
-// TODO: Give real deno.land URL.
+// In your own code, use: import { init } from "https://deno.land/x/ningen";
 import { File, init } from "../../mod.ts";
 
 // Initialises Ningen and retrieves the functions for defining rules and build
