@@ -1,4 +1,5 @@
 rule append
-  command = ./tools/append.sh $in $out
+  command = $binary $in $out
 
 build subdir/foo.out: append subdir/foo.txt | tools/append.sh
+  binary = tools/append.sh

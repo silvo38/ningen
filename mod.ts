@@ -25,6 +25,7 @@ export class Target {
     readonly inputs: Files,
     readonly outputs: Files,
     readonly implicit: Files,
+    readonly vars: Vars,
   ) {}
 }
 
@@ -78,17 +79,26 @@ export class Ningen {
   }
 
   build(
-    { rule, inputs, outputs }: {
+    { rule, inputs, outputs, vars }: {
       /** The rule to invoke. */
       rule: Rule;
       /** The input files to build. */
       inputs: Files;
       /** The output files that get built. */
       outputs: Files;
+      /** Variables to pass in to the rule. */
+      vars?: Vars;
     },
   ): Target {
     const implicit = rule.srcs;
-    const t = new Target(rule, inputs, outputs, implicit);
+    vars = vars ?? {};
+
+    // Set $binary var if not already set.
+    if (rule.binary != null && vars.binary == null) {
+      vars.binary = rule.binary;
+    }
+
+    const t = new Target(rule, inputs, outputs, implicit, vars);
     targets.push(t);
     return t;
   }

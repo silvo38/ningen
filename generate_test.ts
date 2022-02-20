@@ -1,5 +1,4 @@
 import { assertEquals } from "./deps.ts";
-import { Generator } from "./generate.ts";
 import { Ningen } from "./mod.ts";
 
 const ng = new Ningen("/root/dir");
@@ -15,7 +14,7 @@ Deno.test("Generator: writeRule", () => {
   ng.rule({ name: "rrr", command: "cmd goes here" });
 
   assertEquals(
-    ng.generateToString().trimEnd(),
+    ng.generateToString().trim(),
     `rule rrr
   command = cmd goes here`,
   );
@@ -34,7 +33,7 @@ Deno.test("Generator: writeRule: string vars", () => {
   });
 
   assertEquals(
-    ng.generateToString().trimEnd(),
+    ng.generateToString().trim(),
     `rule rrr
   command = cmd goes here
   c = ccc
@@ -56,7 +55,7 @@ Deno.test("Generator: writeRule: file vars", () => {
   });
 
   assertEquals(
-    ng.generateToString().trimEnd(),
+    ng.generateToString().trim(),
     `rule rrr
   command = cmd goes here
   c = ccc
@@ -65,32 +64,28 @@ Deno.test("Generator: writeRule: file vars", () => {
   );
 });
 
-Deno.test("Generator: writeRule: $binary substitution", () => {
+Deno.test("Generator: writeRule: binary does not appear in rule def", () => {
   ng.reset();
-  const generator = new Generator("/root/dir");
-
-  generator.writeRule(ng.rule({
+  ng.rule({
     name: "rrr",
     command: "something $binary something",
     binary: ng.file("/root/dir/mybinary"),
-  }));
+  });
 
   assertEquals(
-    ng.generateToString().trimEnd(),
-    `rule rrr
-  command = something ./mybinary something`,
+    ng.generateToString().trim(),
+    `
+rule rrr
+  command = something $binary something
+`.trim(),
   );
 });
 
 // Deno.test("Generator: writeRule: generator", () => {
-//
-
-//   generator.writeRule(
 //     ng.rule({ name: "rrr", command: "cmd goes here", generator: true }),
 //   );
-
 //   assertEquals(
-//     ng.generateToString().trimEnd(),
+//     ng.generateToString().trim(),
 //     `rule rrr
 //   command = cmd goes here
 //   generator = 1`,
@@ -98,14 +93,10 @@ Deno.test("Generator: writeRule: $binary substitution", () => {
 // });
 
 // Deno.test("Generator: writeRule: depfile", () => {
-//
-
-//   generator.writeRule(
 //     ng.rule({ name: "rrr", command: "cmd", depfile: "$out.d" }),
 //   );
-
 //   assertEquals(
-//     ng.generateToString().trimEnd(),
+//     ng.generateToString().trim(),
 //     `rule rrr
 //   command = cmd
 //   depfile = $out.d
@@ -153,12 +144,58 @@ Deno.test("Generator: writeTarget: with implicit inputs", () => {
   });
 
   assertEquals(
-    ng.generateToString().trimEnd(),
+    ng.generateToString().trim(),
     `
 rule r
   command = c
 
 build o: r i | x1 x2
+`.trim(),
+  );
+});
+
+Deno.test("Generator: writeTarget: vars", () => {
+  ng.reset();
+  ng.build({
+    rule: testRule,
+    inputs: ng.files("i"),
+    outputs: ng.files("o"),
+    vars: {
+      varA: "A",
+      varB: ng.file("b/b"),
+    },
+  });
+
+  assertEquals(
+    ng.generateToString().trim(),
+    `
+build o: ttt i
+  varA = A
+  varB = b/b
+`.trim(),
+  );
+});
+
+Deno.test("Generator: writeRule: binary added to vars", () => {
+  ng.reset();
+  const r = ng.rule({
+    name: "r",
+    command: "$binary 123",
+    binary: ng.file("mybinary"),
+  });
+  ng.build({
+    rule: r,
+    inputs: ng.files("i"),
+    outputs: ng.files("o"),
+  });
+  assertEquals(
+    ng.generateToString().trim(),
+    `
+rule r
+  command = $binary 123
+
+build o: r i | mybinary
+  binary = mybinary
 `.trim(),
   );
 });
@@ -185,7 +222,7 @@ Deno.test("Generator: write", () => {
   });
 
   assertEquals(
-    ng.generateToString().trimEnd(),
+    ng.generateToString().trim(),
     `
 rule r0
   command = c0
@@ -207,7 +244,7 @@ Deno.test("Generator: write: rules written in sorted order", () => {
   ng.rule({ name: "rrr1", command: "cmd goes here" });
 
   assertEquals(
-    ng.generateToString().trimEnd(),
+    ng.generateToString().trim(),
     `
 rule rrr1
   command = cmd goes here
@@ -240,7 +277,7 @@ Deno.test("Generator: write: targets written in original order", () => {
   });
 
   assertEquals(
-    ng.generateToString().trimEnd(),
+    ng.generateToString().trim(),
     `
 rule ttt
   command = ttt

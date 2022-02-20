@@ -1,4 +1,4 @@
-import { Rule, Target } from "./mod.ts";
+import { Rule, Target, Vars } from "./mod.ts";
 import { addLeadingDotSlash, sorted } from "./util.ts";
 
 export class Generator {
@@ -26,22 +26,16 @@ export class Generator {
 
   writeRule(rule: Rule) {
     let command = rule.command;
-    if (rule.binary != null) {
-      const binaryPath = addLeadingDotSlash(
-        rule.binary.getRelativePath(this.directory),
-      );
-      command = command.replace(/\$binary\b/, binaryPath);
-    }
+    // if (rule.binary != null) {
+    //   const binaryPath = addLeadingDotSlash(
+    //     rule.binary.getRelativePath(this.directory),
+    //   );
+    //   command = command.replace(/\$binary\b/, binaryPath);
+    // }
 
     this.addLine(`rule ${rule.name}`);
     this.addLine(`command = ${command}`, 1);
-    for (const [key, value] of Object.entries(rule.vars)) {
-      if (typeof value === "string") {
-        this.addLine(`${key} = ${value}`, 1);
-      } else {
-        this.addLine(`${key} = ${value.getRelativePath(this.directory)}`, 1);
-      }
-    }
+    this.writeVars(rule.vars);
     // if (rule.generator) {
     //   this.addLine(`generator = 1`, 1);
     // }
@@ -66,6 +60,18 @@ export class Generator {
       s += " | " + implicit;
     }
     this.addLine(s);
+
+    this.writeVars(target.vars);
+  }
+
+  private writeVars(vars: Vars) {
+    for (const [key, value] of Object.entries(vars)) {
+      if (typeof value === "string") {
+        this.addLine(`${key} = ${value}`, 1);
+      } else {
+        this.addLine(`${key} = ${value.getRelativePath(this.directory)}`, 1);
+      }
+    }
   }
 
   private newline() {
