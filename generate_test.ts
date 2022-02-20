@@ -15,8 +15,10 @@ Deno.test("generate: writeRule", () => {
 
   assertEquals(
     ng.generateToString().trim(),
-    `rule rrr
-  command = cmd goes here`,
+    `
+rule rrr
+  command = cmd goes here
+`.trim(),
   );
 });
 
@@ -34,11 +36,13 @@ Deno.test("generate: writeRule: string vars", () => {
 
   assertEquals(
     ng.generateToString().trim(),
-    `rule rrr
+    `
+rule rrr
   command = cmd goes here
   c = ccc
   b = bbb
-  a = aaa`,
+  a = aaa
+`.trim(),
   );
 });
 
@@ -56,11 +60,13 @@ Deno.test("generate: writeRule: file vars", () => {
 
   assertEquals(
     ng.generateToString().trim(),
-    `rule rrr
+    `
+rule rrr
   command = cmd goes here
   c = ccc
   b = ../../abs/bbb
-  a = nested/aaa`,
+  a = nested/aaa
+`.trim(),
   );
 });
 
@@ -86,9 +92,11 @@ rule rrr
 //   );
 //   assertEquals(
 //     ng.generateToString().trim(),
-//     `rule rrr
+//     `
+// rule rrr
 //   command = cmd goes here
-//   generator = 1`,
+//   generator = 1
+// `.trim(),
 //   );
 // });
 
@@ -97,10 +105,12 @@ rule rrr
 //   );
 //   assertEquals(
 //     ng.generateToString().trim(),
-//     `rule rrr
+//     `
+// rule rrr
 //   command = cmd
 //   depfile = $out.d
-//   deps = gcc`,
+//   deps = gcc
+// `.trim(),
 //   );
 // });
 
@@ -125,7 +135,8 @@ Deno.test("generate: writeTarget: multiple inputs and outputs", () => {
 
   assertEquals(
     ng.generateToString().trim(),
-    `build o1 o2: ttt i1 i2`,
+    `build o1 o2: ttt i1 i2
+`.trim(),
   );
 });
 
