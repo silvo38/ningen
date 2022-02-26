@@ -1,4 +1,5 @@
 rule append
   command = ./append.sh $in $out
+  description = Appending text
 
 build foo.out: append foo.txt | append.sh

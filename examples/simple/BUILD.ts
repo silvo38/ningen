@@ -13,6 +13,7 @@ const appendRule = ng.rule({
   name: "append",
   command: "./append.sh $in $out",
   srcs: ng.files("append.sh"),
+  description: "Appending text",
 });
 
 // Define a helper function that invokes the rule.

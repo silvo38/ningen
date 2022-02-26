@@ -54,6 +54,9 @@ export class Generator {
     //   this.addLine(`depfile = ${rule.depfile}`, 1);
     //   this.addLine(`deps = gcc`, 1);
     // }
+    if (rule.description) {
+      this.addLine(`description = ${rule.description}`, 1);
+    }
     if (rule.generator) {
       this.addLine(`generator = 1`, 1);
     }

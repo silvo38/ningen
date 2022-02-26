@@ -14,6 +14,7 @@ export class Rule {
     readonly command: string,
     readonly binary: File | null,
     readonly srcs: Files,
+    readonly description: string | null,
     readonly vars: Vars,
     readonly generator: boolean,
     /** The directory the rule was defined in. */
@@ -49,7 +50,7 @@ export class Ningen {
   constructor(private readonly directory: string) {}
 
   rule(
-    { name, command, binary, srcs, vars, generator }: {
+    { name, command, binary, srcs, description, vars, generator }: {
       /** The name for the rule. */
       name: string;
       /** The shell command to invoke. */
@@ -61,6 +62,8 @@ export class Ningen {
       binary?: File;
       /** Optional implicit deps to add to build targets using this rule. */
       srcs?: Files;
+      /** Optional description to print when this rule is running. */
+      description?: string;
       /**
        * Optional environment variables set to their default values. These can be
        * used in the command, and can be overridden in individual build targets.
@@ -83,6 +86,7 @@ export class Ningen {
       command,
       binary ?? null,
       srcs,
+      description ?? null,
       vars,
       generator ?? false,
       this.directory,

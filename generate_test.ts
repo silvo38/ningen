@@ -249,6 +249,24 @@ rule r2
   );
 });
 
+Deno.test("generate: writeRule: includes description", () => {
+  ng.reset();
+  ng.rule({
+    name: "r",
+    command: "rrr",
+    description: "my description",
+  });
+
+  assertEquals(
+    ng.generateToString().trim(),
+    `
+rule r
+  command = rrr
+  description = my description
+`.trim(),
+  );
+});
+
 Deno.test("generate: write", () => {
   ng.reset();
   const rule0 = ng.rule({ name: "r0", command: "c0" });

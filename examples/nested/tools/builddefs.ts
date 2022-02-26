@@ -8,6 +8,7 @@ const appendRule = ng.rule({
   name: "append",
   command: "$binary $in $out",
   binary: ng.file("append.sh"),
+  description: "Appending text",
 });
 
 // Define a helper function that invokes the rule. Exported, so other BUILD.ts

@@ -17,6 +17,7 @@ const ningenRule = ng.rule({
   command: "$binary",
   binary: ng.file("BUILD.ts"),
   generator: true,
+  description: "Regenerating ninja file",
 });
 
 ng.build({
