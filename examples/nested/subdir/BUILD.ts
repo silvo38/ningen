@@ -1,4 +1,5 @@
-// In your own code, use: import { init } from "https://deno.land/x/ningen";
+// In your own code, use:
+// import { init } from "https://deno.land/x/ningen@0.0.0/mod.ts";
 import { init } from "../../../mod.ts";
 
 // Import append rule from other file.

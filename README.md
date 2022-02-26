@@ -8,7 +8,8 @@ TypeScript API, and it generates a `build.ninja` file for you. The build files
 are just regular TypeScript files, run with [Deno](https://deno.land), so you're
 free to extend them and make them as complex and powerful as you need to.
 
-Released at https://deno.land/x/ningen.
+Released at https://deno.land/x/ningen. Latest version is
+https://deno.land/x/ningen@0.0.0/mod.ts
 
 ## Installation
 
