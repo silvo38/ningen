@@ -1,4 +1,4 @@
-import { Rule, Target, Vars } from "./mod.ts";
+import { Pool, Rule, Target, Vars } from "./mod.ts";
 import { addLeadingDotSlash, sorted } from "./util.ts";
 import { path } from "./deps.ts";
 
@@ -11,18 +11,30 @@ export class Generator {
     return this.output.join("\n");
   }
 
-  write(rules: readonly Rule[], targets: readonly Target[]) {
-    for (const rule of sorted(rules.values(), (r) => r.name)) {
-      this.writeRule(rule);
+  write(
+    pools: readonly Pool[],
+    rules: readonly Rule[],
+    targets: readonly Target[],
+  ) {
+    for (const pool of sorted(pools.values(), (p) => p.name)) {
+      this.writePool(pool);
+      this.newline();
     }
 
-    this.newline();
+    for (const rule of sorted(rules.values(), (r) => r.name)) {
+      this.writeRule(rule);
+      this.newline();
+    }
 
     for (const target of targets) {
       this.writeTarget(target);
+      this.newline();
     }
+  }
 
-    this.newline();
+  writePool(pool: Pool) {
+    this.addLine(`pool ${pool.name}`);
+    this.addLine(`depth = ${pool.depth}`, 1);
   }
 
   writeRule(rule: Rule) {
@@ -60,6 +72,9 @@ export class Generator {
     if (rule.generator) {
       this.addLine(`generator = 1`, 1);
     }
+    if (rule.pool) {
+      this.addLine(`pool = ${rule.pool.name}`, 1);
+    }
   }
 
   writeTarget(target: Target) {
@@ -77,6 +92,14 @@ export class Generator {
       s += " | " + implicit;
     }
     this.addLine(s);
+
+    if (target.pool != null) {
+      if (target.pool == "") {
+        this.addLine(`pool =`, 1);
+      } else {
+        this.addLine(`pool = ${target.pool?.name}`, 1);
+      }
+    }
 
     this.writeVars(target.vars);
   }

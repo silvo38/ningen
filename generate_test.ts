@@ -9,6 +9,22 @@ const testRule = ng.rule({
   srcs: [],
 });
 
+Deno.test("generate: writePool: outputs pool", () => {
+  ng.reset();
+  ng.pool({
+    name: "my_pool",
+    depth: 2,
+  });
+
+  assertEquals(
+    ng.generateToString().trim(),
+    `
+pool my_pool
+  depth = 2
+`.trim(),
+  );
+});
+
 Deno.test("generate: writeRule", () => {
   ng.reset();
   ng.rule({ name: "rrr", command: "cmd goes here" });
@@ -111,6 +127,66 @@ Deno.test("generate: writeRule: generator", () => {
 rule rrr
   command = cmd goes here
   generator = 1
+`.trim(),
+  );
+});
+
+Deno.test("generate: writeRule: using a pool", () => {
+  ng.reset();
+  const pool = ng.pool({ name: "my_pool", depth: 1 });
+  ng.rule({ name: "rrr", command: "cmd goes here", pool });
+  assertEquals(
+    ng.generateToString().trim(),
+    `
+pool my_pool
+  depth = 1
+
+rule rrr
+  command = cmd goes here
+  pool = my_pool
+`.trim(),
+  );
+});
+
+Deno.test("generate: writeRule: substitutes $dir", () => {
+  ng.reset();
+  ng.rule({
+    name: "r1",
+    command: "cd $dir && something in root",
+  });
+
+  const subdirNg = new Ningen("/root/dir/subdir");
+  subdirNg.rule({
+    name: "r2",
+    command: "cd $dir && something in subdir",
+  });
+
+  assertEquals(
+    ng.generateToString().trim(),
+    `
+rule r1
+  command = cd ./ && something in root
+
+rule r2
+  command = cd ./subdir && something in subdir
+`.trim(),
+  );
+});
+
+Deno.test("generate: writeRule: includes description", () => {
+  ng.reset();
+  ng.rule({
+    name: "r",
+    command: "rrr",
+    description: "my description",
+  });
+
+  assertEquals(
+    ng.generateToString().trim(),
+    `
+rule r
+  command = rrr
+  description = my description
 `.trim(),
   );
 });
@@ -225,44 +301,62 @@ build o: r i | mybinary
   );
 });
 
-Deno.test("generate: writeRule: substitutes $dir", () => {
+Deno.test("generate: writeTarget: overriding default pool with new pool", () => {
   ng.reset();
-  ng.rule({
-    name: "r1",
-    command: "cd $dir && something in root",
-  });
+  const pool1 = ng.pool({ name: "my_pool1", depth: 1 });
+  const pool2 = ng.pool({ name: "my_pool2", depth: 1 });
+  const rule = ng.rule({ name: "rrr", command: "cmd goes here", pool: pool1 });
 
-  const subdirNg = new Ningen("/root/dir/subdir");
-  subdirNg.rule({
-    name: "r2",
-    command: "cd $dir && something in subdir",
+  ng.build({
+    rule,
+    inputs: ng.files("i"),
+    outputs: ng.files("o"),
+    pool: pool2,
   });
 
   assertEquals(
     ng.generateToString().trim(),
     `
-rule r1
-  command = cd ./ && something in root
-rule r2
-  command = cd ./subdir && something in subdir
+pool my_pool1
+  depth = 1
+
+pool my_pool2
+  depth = 1
+
+rule rrr
+  command = cmd goes here
+  pool = my_pool1
+
+build o: rrr i
+  pool = my_pool2
 `.trim(),
   );
 });
 
-Deno.test("generate: writeRule: includes description", () => {
+Deno.test("generate: writeTarget: overriding default pool with empty string", () => {
   ng.reset();
-  ng.rule({
-    name: "r",
-    command: "rrr",
-    description: "my description",
+  const pool = ng.pool({ name: "my_pool", depth: 1 });
+  const rule = ng.rule({ name: "rrr", command: "cmd goes here", pool });
+
+  ng.build({
+    rule,
+    inputs: ng.files("i"),
+    outputs: ng.files("o"),
+    pool: "",
   });
 
   assertEquals(
     ng.generateToString().trim(),
     `
-rule r
-  command = rrr
-  description = my description
+pool my_pool
+  depth = 1
+
+rule rrr
+  command = cmd goes here
+  pool = my_pool
+
+build o: rrr i
+  pool =
 `.trim(),
   );
 });
@@ -293,13 +387,17 @@ Deno.test("generate: write", () => {
     `
 rule r0
   command = c0
+
 rule r1
   command = c1
+
 rule r2
   command = c2
 
 build o0: r0 i0
+
 build o1: r1 i1
+
 build o2: r2 i2
 `.trim(),
   );
@@ -315,6 +413,7 @@ Deno.test("generate: write: rules written in sorted order", () => {
     `
 rule rrr1
   command = cmd goes here
+
 rule rrr2
   command = cmd goes here
 `.trim(),
@@ -350,7 +449,9 @@ rule ttt
   command = ttt
 
 build o3: ttt i3
+
 build o2: ttt i2
+
 build o1: ttt i1
 `.trim(),
   );

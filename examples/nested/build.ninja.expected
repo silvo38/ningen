@@ -1,10 +1,12 @@
 rule append
   command = ./tools/append.sh $in $out
   description = Appending text
+
 rule ningen
   command = ./BUILD.ts
   description = Regenerating ninja file
   generator = 1
 
 build subdir/foo.out: append subdir/foo.txt | tools/append.sh
+
 build build.ninja: ningen  | BUILD.ts
