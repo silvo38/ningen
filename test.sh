@@ -2,7 +2,7 @@
 # Presubmit script
 set -e
 
-deno test "$@"
+deno test --allow-read "$@"
 deno fmt --check
 
 (cd examples/simple && ./test.sh)

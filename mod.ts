@@ -1,6 +1,7 @@
 import { path } from "./deps.ts";
 import { File, Files } from "./file.ts";
 import { Generator } from "./generate.ts";
+import { fs } from "./deps.ts";
 
 export { File };
 
@@ -174,6 +175,30 @@ export class Ningen {
       }
       return this.file(f);
     });
+  }
+
+  /**
+   * Returns all files matching the given glob. Optionally can supply other
+   * globs to exclude certain paths.
+   */
+  glob(
+    glob: string,
+    { exclude, canBeEmpty }: { exclude?: string[]; canBeEmpty?: boolean } = {},
+  ): Files {
+    canBeEmpty = canBeEmpty ?? false;
+    const results: File[] = [];
+    const files = fs.expandGlobSync(glob, { root: this.directory, exclude });
+    for (const file of files) {
+      results.push(this.file(file.path));
+    }
+    if (results.length == 0 && !canBeEmpty) {
+      const globDescription = [
+        glob,
+        ...(exclude ?? []).map((x) => `-${x}`),
+      ].join(", ");
+      throw new Error(`Glob expanded to empty set: ${globDescription}`);
+    }
+    return results;
   }
 
   /**
