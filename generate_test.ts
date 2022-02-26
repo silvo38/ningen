@@ -148,6 +148,19 @@ rule rrr
   );
 });
 
+Deno.test("generate: writeRule: using the console pool", () => {
+  ng.reset();
+  ng.rule({ name: "rrr", command: "cmd goes here", pool: "console" });
+  assertEquals(
+    ng.generateToString().trim(),
+    `
+rule rrr
+  command = cmd goes here
+  pool = console
+`.trim(),
+  );
+});
+
 Deno.test("generate: writeRule: substitutes $dir", () => {
   ng.reset();
   ng.rule({

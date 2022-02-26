@@ -24,7 +24,7 @@ export class Rule {
     readonly generator: boolean,
     /** The directory the rule was defined in. */
     readonly directory: string,
-    readonly pool: Pool | null,
+    readonly pool: Pool | "console" | null,
   ) {}
 }
 
@@ -36,7 +36,7 @@ export class Target {
     readonly outputs: Files,
     readonly implicit: Files,
     readonly vars: Vars,
-    readonly pool: Pool | "" | null,
+    readonly pool: Pool | "console" | "" | null,
   ) {}
 }
 
@@ -79,7 +79,7 @@ export class Ningen {
       /** Defines this rule as a generator rule. Defaults to false. */
       generator?: boolean;
       /** Optional pool to use for this rule. */
-      pool?: Pool;
+      pool?: Pool | "console";
     },
   ): Rule {
     srcs = srcs ?? [];
@@ -180,9 +180,9 @@ export class Ningen {
    * Imports other `BUILD.ts` files. Convenience function, if you want to
    * import other files using a glob.
    */
-  async import(...filenames: string[]) {
-    for (const filename of filenames) {
-      await import(filename);
+  async import(...files: Files) {
+    for (const file of files) {
+      await import(file.getAbsolutePath());
     }
   }
 

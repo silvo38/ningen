@@ -72,8 +72,8 @@ export class Generator {
     if (rule.generator) {
       this.addLine(`generator = 1`, 1);
     }
-    if (rule.pool) {
-      this.addLine(`pool = ${rule.pool.name}`, 1);
+    if (rule.pool != null) {
+      this.writePoolAssignment(rule.pool);
     }
   }
 
@@ -94,14 +94,15 @@ export class Generator {
     this.addLine(s);
 
     if (target.pool != null) {
-      if (target.pool == "") {
-        this.addLine(`pool =`, 1);
-      } else {
-        this.addLine(`pool = ${target.pool?.name}`, 1);
-      }
+      this.writePoolAssignment(target.pool);
     }
 
     this.writeVars(target.vars);
+  }
+
+  private writePoolAssignment(pool: Pool | "console" | "") {
+    const poolName = typeof pool == "string" ? pool : pool.name;
+    this.addLine(`pool = ${poolName}`, 1);
   }
 
   private writeVars(vars: Vars) {
