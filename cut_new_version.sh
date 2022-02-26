@@ -16,7 +16,7 @@ fi
 VERSION="$1"
 
 # Update all version numbers in the repo (ignoring hidden files)
-find ./ -not -path '*/\.*' -type f -exec sed -i "s/@v?[0-9]\.[0-9]\.[0-9]/@$VERSION/g" {} \;
+find ./ -not -path '*/\.*' -type f -exec sed -i "s/@[0-9]\.[0-9]\.[0-9]/@$VERSION/g" {} \;
 
 # Check diff before committing.
 git diff
