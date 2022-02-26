@@ -1,4 +1,4 @@
-import { assertEquals } from "./deps.ts";
+import { assertEquals, assertThrows } from "./deps.ts";
 import { Ningen } from "./mod.ts";
 
 const ng = new Ningen("/root/dir");
@@ -70,7 +70,7 @@ rule rrr
   );
 });
 
-Deno.test("generate: writeRule: binary does not appear in rule def", () => {
+Deno.test("generate: writeRule: $binary substituted in command", () => {
   ng.reset();
   ng.rule({
     name: "rrr",
@@ -82,8 +82,23 @@ Deno.test("generate: writeRule: binary does not appear in rule def", () => {
     ng.generateToString().trim(),
     `
 rule rrr
-  command = something $binary something
+  command = something ./mybinary something
 `.trim(),
+  );
+});
+
+Deno.test("generate: writeRule: error if $binary is not in rule command", () => {
+  ng.reset();
+  ng.rule({
+    name: "rrr",
+    command: "something something",
+    binary: ng.file("/root/dir/mybinary"),
+  });
+
+  assertThrows(
+    () => ng.generateToString(),
+    Error,
+    "binary property defined in rule rrr but not referenced in command: something something",
   );
 });
 
@@ -187,7 +202,7 @@ build o: ttt i
   );
 });
 
-Deno.test("generate: writeRule: binary added to vars", () => {
+Deno.test("generate: writeRule: binary not added to vars", () => {
   ng.reset();
   const r = ng.rule({
     name: "r",
@@ -203,10 +218,9 @@ Deno.test("generate: writeRule: binary added to vars", () => {
     ng.generateToString().trim(),
     `
 rule r
-  command = $binary 123
+  command = ./mybinary 123
 
 build o: r i | mybinary
-  binary = mybinary
 `.trim(),
   );
 });

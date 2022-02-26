@@ -1,5 +1,5 @@
 import { Rule, Target, Vars } from "./mod.ts";
-import { sorted } from "./util.ts";
+import { addLeadingDotSlash, sorted } from "./util.ts";
 
 export class Generator {
   private readonly output: string[] = [];
@@ -25,8 +25,21 @@ export class Generator {
   }
 
   writeRule(rule: Rule) {
+    let command = rule.command;
+    if (rule.binary) {
+      command = command.replaceAll(
+        /\$binary\b/g,
+        addLeadingDotSlash(rule.binary.getRelativePath(this.directory)),
+      );
+      if (command == rule.command) {
+        throw new Error(
+          `binary property defined in rule ${rule.name} but not referenced in command: ${rule.command}`,
+        );
+      }
+    }
+
     this.addLine(`rule ${rule.name}`);
-    this.addLine(`command = ${rule.command}`, 1);
+    this.addLine(`command = ${command}`, 1);
     this.writeVars(rule.vars);
     // if (rule.depfile) {
     //   this.addLine(`depfile = ${rule.depfile}`, 1);

@@ -1,10 +1,8 @@
 rule append
-  command = $binary $in $out
+  command = ./tools/append.sh $in $out
 rule ningen
-  command = $binary
+  command = ./BUILD.ts
   generator = 1
 
 build subdir/foo.out: append subdir/foo.txt | tools/append.sh
-  binary = tools/append.sh
 build build.ninja: ningen  | BUILD.ts
-  binary = BUILD.ts

@@ -39,7 +39,7 @@ Released at https://deno.land/x/ningen.
 3. Import the `root` function from Ningen, and add the following skeleton:
 
    ```typescript
-   import { init } from "https://deno.land/x/ningen";
+   import { init } from "https://deno.land/x/ningen@0.0.0/mod.ts";
 
    // import.meta.url is a necessary hack in order to use relative file paths.
    const ng = init(import.meta.url);
@@ -124,6 +124,21 @@ Released at https://deno.land/x/ningen.
      outputs: ["everything.out"],
    });
    ```
+
+## Special vars
+
+There are some special vars you can use in your build commands. There are all
+the usual ninja ones, here are some of note:
+
+- `$in` is the list of input sources
+
+- `$out` is the list of output sources
+
+In addition, there are some extra ones defined for ningen:
+
+- `$binary` is the relative path of the file from the `binary` rule property
+
+- `$dir` is the directory of the current `BUILD.ts` file
 
 ## Developer notes
 

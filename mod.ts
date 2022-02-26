@@ -103,11 +103,6 @@ export class Ningen {
     const implicit = rule.srcs;
     vars = vars ?? {};
 
-    // Set $binary var if not already set.
-    if (rule.binary != null && vars.binary == null) {
-      vars.binary = rule.binary;
-    }
-
     const t = new Target(rule, inputs, outputs, implicit, vars);
     targets.push(t);
     return t;
