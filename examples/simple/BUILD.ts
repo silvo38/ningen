@@ -2,7 +2,7 @@
 // The shebang above lets you execute this BUILD.ts file directly.
 
 // In your own code, use:
-// import { File, init } from "https://deno.land/x/ningen@0.0.0/mod.ts";
+// import { File, init } from "https://deno.land/x/ningen@0.0.2/mod.ts";
 import { File, init } from "../../mod.ts";
 
 // Initialises Ningen and retrieves the functions for defining rules and build

@@ -25,7 +25,7 @@ fi
 
 # Commit and push
 echo "Committing"
-git commit -a -m "Updating URLs to point at version $VERSION"
+git commit -a -m "Release version $VERSION"
 echo "Pushing commit"
 git push
 
