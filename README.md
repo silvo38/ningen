@@ -130,15 +130,17 @@ Released at https://deno.land/x/ningen.
 There are some special vars you can use in your build commands. There are all
 the usual ninja ones, here are some of note:
 
-- `$in` is the list of input sources
+- `$in` is the list of input sources, e.g. `command = "gcc $in"`
 
-- `$out` is the list of output sources
+- `$out` is the list of output sources, e.g. `command = "cat $in > $out"`
 
 In addition, there are some extra ones defined for ningen:
 
-- `$binary` is the relative path of the file from the `binary` rule property
+- `$binary` is the relative path of the file from the `binary` rule property,
+  e.g. `command = "$binary --flag"`
 
-- `$dir` is the directory of the current `BUILD.ts` file
+- `$dir` is the directory of the current `BUILD.ts` file, e.g.
+  `command = "cd $dir && cargo build"`
 
 ## Developer notes
 

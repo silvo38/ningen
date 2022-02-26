@@ -16,6 +16,8 @@ export class Rule {
     readonly srcs: Files,
     readonly vars: Vars,
     readonly generator: boolean,
+    /** The directory the rule was defined in. */
+    readonly directory: string,
   ) {}
 }
 
@@ -83,6 +85,7 @@ export class Ningen {
       srcs,
       vars,
       generator ?? false,
+      this.directory,
     );
     rules.push(r);
     return r;

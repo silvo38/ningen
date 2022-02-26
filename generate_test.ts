@@ -225,6 +225,30 @@ build o: r i | mybinary
   );
 });
 
+Deno.test("generate: writeRule: substitutes $dir", () => {
+  ng.reset();
+  ng.rule({
+    name: "r1",
+    command: "cd $dir && something in root",
+  });
+
+  const subdirNg = new Ningen("/root/dir/subdir");
+  subdirNg.rule({
+    name: "r2",
+    command: "cd $dir && something in subdir",
+  });
+
+  assertEquals(
+    ng.generateToString().trim(),
+    `
+rule r1
+  command = cd ./ && something in root
+rule r2
+  command = cd ./subdir && something in subdir
+`.trim(),
+  );
+});
+
 Deno.test("generate: write", () => {
   ng.reset();
   const rule0 = ng.rule({ name: "r0", command: "c0" });
