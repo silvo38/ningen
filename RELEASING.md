@@ -2,6 +2,23 @@
 
 Releases are deployed to deno.land: https://deno.land/x/ningen
 
+## Easy way
+
+Run the `cut_new_version.sh` script, giving it the new version number to create.
+
+```sh
+./cut_new_version.sh 1.2.3
+```
+
+It will update all of the URLs in the repo to point at the new version number,
+create a new tag for that version, and upload it.
+
+You'll need to deal with the special branches yourself.
+
+## Manual way
+
+Old instructions follow:
+
 To create a new release, just create a new tag and push it:
 
 ```sh
