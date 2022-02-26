@@ -79,8 +79,8 @@ Released at https://deno.land/x/ningen.
    ```typescript
    ng.build({
      rule: appendRule,
-     inputs: ["file.txt"],
-     outputs: ["file.txt.out"],
+     inputs: ng.files("file.txt"),
+     outputs: ng.files("file.txt.out"),
    });
    ```
 
@@ -104,14 +104,6 @@ Released at https://deno.land/x/ningen.
 7. The `glob` method lets you easily operate over many files:
 
    ```typescript
-   function append(src) {
-     ng.build({
-       rule: appendRule,
-       inputs: [src],
-       outputs: [src + ".out"],
-     });
-   }
-
    ng.glob("*.txt").forEach((src) => append(src));
    ```
 
