@@ -9,7 +9,7 @@ are just regular TypeScript files, run with [Deno](https://deno.land), so you're
 free to extend them and make them as complex and powerful as you need to.
 
 Released at https://deno.land/x/ningen. Latest version is
-https://deno.land/x/ningen@0.0.5/mod.ts
+https://deno.land/x/ningen@0.0.6/mod.ts
 
 ## Installation
 
@@ -40,7 +40,7 @@ https://deno.land/x/ningen@0.0.5/mod.ts
 3. Import the `root` function from Ningen, and add the following skeleton:
 
    ```typescript
-   import { init } from "https://deno.land/x/ningen@0.0.5/mod.ts";
+   import { init } from "https://deno.land/x/ningen@0.0.6/mod.ts";
 
    // import.meta.url is a necessary hack in order to use relative file paths.
    const ng = init(import.meta.url);
