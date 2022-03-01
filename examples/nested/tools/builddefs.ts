@@ -1,5 +1,5 @@
 // In your own code, use:
-// import { File, init } from "https://deno.land/x/ningen@0.0.4/mod.ts";
+// import { File, init } from "https://deno.land/x/ningen@0.0.5/mod.ts";
 import { File, init } from "../../../mod.ts";
 
 const ng = init(import.meta.url);
