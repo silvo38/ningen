@@ -2,6 +2,7 @@ import { path } from "./deps.ts";
 import { File, Files } from "./file.ts";
 import { Generator } from "./generate.ts";
 import { fs } from "./deps.ts";
+import { sorted } from "./util.ts";
 
 export { File };
 
@@ -192,22 +193,33 @@ export class Ningen {
   }
 
   /**
-   * Returns all files matching the given glob. Optionally can supply other
+   * Returns all files matching the given glob(s). Optionally can supply other
    * globs to exclude certain paths.
+   *
+   * Supply either a single string, e.g. `glob("*.jpg")`, or an array of
+   * strings, e.g. `glob(["*.jpg", "*.png"])`.
    */
   glob(
-    glob: string,
+    globs: string | string[],
     { exclude, canBeEmpty }: { exclude?: string[]; canBeEmpty?: boolean } = {},
   ): Files {
     canBeEmpty = canBeEmpty ?? false;
-    const results: File[] = [];
-    const files = fs.expandGlobSync(glob, { root: this.directory, exclude });
-    for (const file of files) {
-      results.push(this.file(file.path));
+    if (typeof globs == "string") {
+      globs = [globs];
     }
+    // Store as a Set to de-dupe paths included in multiple globs.
+    const paths: Set<string> = new Set();
+    for (const glob of globs) {
+      const files = fs.expandGlobSync(glob, { root: this.directory, exclude });
+      for (const file of files) {
+        paths.add(file.path);
+      }
+    }
+    // Convert to array of Files.
+    const results = this.files(sorted(paths));
     if (results.length == 0 && !canBeEmpty) {
       const globDescription = [
-        glob,
+        ...globs,
         ...(exclude ?? []).map((x) => `-${x}`),
       ].join(", ");
       throw new Error(`Glob expanded to empty set: ${globDescription}`);

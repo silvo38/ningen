@@ -17,6 +17,30 @@ Deno.test("glob: *.txt", () => {
   );
 });
 
+Deno.test("glob: [*.txt, *.old]", () => {
+  assertEquals(
+    getRelativePaths(ng.glob(["testdata/*.txt", "testdata/*.old"])),
+    [
+      "testdata/a.old",
+      "testdata/a.txt",
+      "testdata/b.txt",
+      "testdata/c.txt",
+    ],
+  );
+});
+
+Deno.test("glob: [*.txt, a.*]", () => {
+  assertEquals(
+    getRelativePaths(ng.glob(["testdata/*.txt", "testdata/a.*"])),
+    [
+      "testdata/a.old",
+      "testdata/a.txt",
+      "testdata/b.txt",
+      "testdata/c.txt",
+    ],
+  );
+});
+
 Deno.test("glob: **/*.txt", () => {
   assertEquals(
     getRelativePaths(ng.glob("testdata/**/*.txt")),
@@ -43,6 +67,28 @@ Deno.test("glob: exclude a.*", () => {
       "testdata/A/a.txt",
       "testdata/A/b.txt",
       "testdata/A/c.txt",
+      "testdata/B/a.txt",
+      "testdata/B/b.txt",
+      "testdata/B/c.txt",
+      "testdata/b.txt",
+      "testdata/c.txt",
+    ],
+  );
+});
+
+Deno.test("glob: exclude a.* across multiple globs", () => {
+  assertEquals(
+    getRelativePaths(
+      ng.glob(["testdata/**/*.txt", "testdata/**/*.old"], {
+        exclude: ["testdata/a.*"],
+      }),
+    ),
+    [
+      "testdata/A/a.old",
+      "testdata/A/a.txt",
+      "testdata/A/b.txt",
+      "testdata/A/c.txt",
+      "testdata/B/a.old",
       "testdata/B/a.txt",
       "testdata/B/b.txt",
       "testdata/B/c.txt",
