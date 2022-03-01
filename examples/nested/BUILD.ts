@@ -12,20 +12,7 @@ import { init } from "../../mod.ts";
 // targets.
 const ng = init(import.meta.url);
 
-// Optional: define a generator rule for this BUILD.ts script.
-const ningenRule = ng.rule({
-  name: "ningen",
-  command: "$binary",
-  binary: ng.file("BUILD.ts"),
-  generator: true,
-  description: "Regenerating ninja file",
-});
-
-ng.build({
-  rule: ningenRule,
-  inputs: [],
-  outputs: ng.files("build.ninja"),
-});
-
 // Write the build.ninja file. Can override the output file if you like.
-ng.generate();
+ng.generate({
+  inputs: ng.glob("**/*.ts"),
+});

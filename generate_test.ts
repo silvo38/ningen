@@ -9,6 +9,10 @@ const testRule = ng.rule({
   srcs: [],
 });
 
+function generate(): string {
+  return ng.generateToString({ enableGeneratorRule: false }).trim();
+}
+
 Deno.test("generate: writePool: outputs pool", () => {
   ng.reset();
   ng.pool({
@@ -17,7 +21,7 @@ Deno.test("generate: writePool: outputs pool", () => {
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 pool my_pool
   depth = 2
@@ -30,7 +34,7 @@ Deno.test("generate: writeRule", () => {
   ng.rule({ name: "rrr", command: "cmd goes here" });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 rule rrr
   command = cmd goes here
@@ -51,7 +55,7 @@ Deno.test("generate: writeRule: string vars", () => {
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 rule rrr
   command = cmd goes here
@@ -75,7 +79,7 @@ Deno.test("generate: writeRule: file vars", () => {
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 rule rrr
   command = cmd goes here
@@ -95,7 +99,7 @@ Deno.test("generate: writeRule: $binary substituted in command", () => {
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 rule rrr
   command = something ./mybinary something
@@ -112,7 +116,7 @@ Deno.test("generate: writeRule: error if $binary is not in rule command", () => 
   });
 
   assertThrows(
-    () => ng.generateToString(),
+    () => generate(),
     Error,
     "binary property defined in rule rrr but not referenced in command: something something",
   );
@@ -122,7 +126,7 @@ Deno.test("generate: writeRule: generator", () => {
   ng.reset();
   ng.rule({ name: "rrr", command: "cmd goes here", generator: true });
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 rule rrr
   command = cmd goes here
@@ -136,7 +140,7 @@ Deno.test("generate: writeRule: using a pool", () => {
   const pool = ng.pool({ name: "my_pool", depth: 1 });
   ng.rule({ name: "rrr", command: "cmd goes here", pool });
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 pool my_pool
   depth = 1
@@ -152,7 +156,7 @@ Deno.test("generate: writeRule: using the console pool", () => {
   ng.reset();
   ng.rule({ name: "rrr", command: "cmd goes here", pool: "console" });
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 rule rrr
   command = cmd goes here
@@ -175,7 +179,7 @@ Deno.test("generate: writeRule: substitutes $dir", () => {
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 rule r1
   command = cd ./ && something in root
@@ -195,7 +199,7 @@ Deno.test("generate: writeRule: includes description", () => {
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 rule r
   command = rrr
@@ -208,7 +212,7 @@ rule r
 //     ng.rule({ name: "rrr", command: "cmd", depfile: "$out.d" }),
 //   );
 //   assertEquals(
-//     ng.generateToString().trim(),
+//     generate(),
 //     `
 // rule rrr
 //   command = cmd
@@ -226,7 +230,7 @@ Deno.test("generate: writeTarget: single input and output", () => {
     outputs: ng.files("o"),
   });
 
-  assertEquals(ng.generateToString().trim(), `build o: ttt i`);
+  assertEquals(generate(), `build o: ttt i`);
 });
 
 Deno.test("generate: writeTarget: multiple inputs and outputs", () => {
@@ -238,7 +242,7 @@ Deno.test("generate: writeTarget: multiple inputs and outputs", () => {
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `build o1 o2: ttt i1 i2
 `.trim(),
   );
@@ -259,7 +263,7 @@ Deno.test("generate: writeTarget: with implicit inputs", () => {
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 rule r
   command = c
@@ -282,7 +286,7 @@ Deno.test("generate: writeTarget: vars", () => {
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 build o: ttt i
   varA = A
@@ -304,7 +308,7 @@ Deno.test("generate: writeRule: binary not added to vars", () => {
     outputs: ng.files("o"),
   });
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 rule r
   command = ./mybinary 123
@@ -328,7 +332,7 @@ Deno.test("generate: writeTarget: overriding default pool with new pool", () => 
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 pool my_pool1
   depth = 1
@@ -359,7 +363,7 @@ Deno.test("generate: writeTarget: overriding default pool with empty string", ()
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 pool my_pool
   depth = 1
@@ -396,7 +400,7 @@ Deno.test("generate: write", () => {
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 rule r0
   command = c0
@@ -422,7 +426,7 @@ Deno.test("generate: write: rules written in sorted order", () => {
   ng.rule({ name: "rrr1", command: "cmd goes here" });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 rule rrr1
   command = cmd goes here
@@ -456,7 +460,7 @@ Deno.test("generate: write: targets written in original order", () => {
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 rule ttt
   command = ttt
@@ -492,7 +496,7 @@ Deno.test("generate: isDefault: non-default targets don't get default statements
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 build o1: ttt i1
 
@@ -522,11 +526,96 @@ Deno.test("generate: isDefault: when everything is default, no default statement
   });
 
   assertEquals(
-    ng.generateToString().trim(),
+    generate(),
     `
 build o1: ttt i1
 
 build o2: ttt i2
 `.trim(),
+  );
+});
+
+Deno.test("generate: using default generator rule", () => {
+  ng.reset();
+
+  assertEquals(
+    ng.generateToString({}).trim(),
+    `
+rule ningen
+  command = ./BUILD.ts
+  description = Regenerating Ninja file
+  generator = 1
+
+build build.ninja: ningen  | BUILD.ts
+`.trim(),
+  );
+});
+
+Deno.test("generate: override output file", () => {
+  ng.reset();
+
+  assertEquals(
+    ng.generateToString({ output: ng.file("override.ninja") }).trim(),
+    `
+rule ningen
+  command = ./BUILD.ts
+  description = Regenerating Ninja file
+  generator = 1
+
+build override.ninja: ningen  | BUILD.ts
+`.trim(),
+  );
+});
+
+Deno.test("generate: override inputs", () => {
+  ng.reset();
+
+  assertEquals(
+    ng.generateToString({ inputs: ng.files("a.txt", "b.txt") }).trim(),
+    `
+rule ningen
+  command = ./BUILD.ts
+  description = Regenerating Ninja file
+  generator = 1
+
+build build.ninja: ningen a.txt b.txt | BUILD.ts
+`.trim(),
+  );
+});
+
+Deno.test("generate: override generator rule", () => {
+  ng.reset();
+  const myGeneratorRule = ng.rule({
+    name: "my-generator",
+    command: "ggg",
+    srcs: ng.files("f"),
+    generator: true,
+  });
+
+  assertEquals(
+    ng.generateToString({ generatorRule: myGeneratorRule }).trim(),
+    `
+rule my-generator
+  command = ggg
+  generator = 1
+
+build build.ninja: my-generator  | f
+`.trim(),
+  );
+});
+
+Deno.test("generate: throws if overridden rule is not a generator rule", () => {
+  ng.reset();
+  const myGeneratorRule = ng.rule({
+    name: "my-generator",
+    command: "ggg",
+    srcs: ng.files("f"),
+    // generator not set => false
+  });
+
+  assertThrows(
+    () => ng.generateToString({ generatorRule: myGeneratorRule }),
+    Error,
+    "my-generator is not a generator rule",
   );
 });

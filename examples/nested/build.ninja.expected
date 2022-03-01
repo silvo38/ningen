@@ -4,9 +4,9 @@ rule append
 
 rule ningen
   command = ./BUILD.ts
-  description = Regenerating ninja file
+  description = Regenerating Ninja file
   generator = 1
 
 build subdir/foo.out: append subdir/foo.txt | tools/append.sh
 
-build build.ninja: ningen  | BUILD.ts
+build build.ninja: ningen BUILD.ts subdir/BUILD.ts tools/builddefs.ts | BUILD.ts

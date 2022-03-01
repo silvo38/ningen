@@ -227,14 +227,74 @@ export class Ningen {
     return results;
   }
 
-  generate(
-    filename?: string,
-  ) {
-    filename = filename ?? "build.ninja";
-    Deno.writeTextFileSync(filename, this.generateToString());
+  /** Generates the `build.ninja` file. Filename can be overridden.  */
+  generate({ inputs, output, enableGeneratorRule, generatorRule }: {
+    /**
+     * Input files. The generator rule will be re-run when these change (if
+     * enabled).
+     */
+    inputs?: Files;
+    /** The output filename. Defaults to `build.ninja`. */
+    output?: File;
+    /**
+     * Whether to create a generator rule for the main Ningen script. This lets
+     * you regenerate the `build.ninja` file by running `ninja`. Defaults to
+     * true.
+     */
+    enableGeneratorRule?: boolean;
+    /**
+     * Optional generator rule to use (if enabled). If not supplied, a default
+     * rule will be created that invokes the `BUILD.ts` script in the current
+     * directory. That may or may not be what you want. If you override this,
+     * don't forget to set `generator: true` in the rule.
+     */
+    generatorRule?: Rule;
+  } = {}) {
+    output = output ?? this.file("build.ninja");
+    Deno.writeTextFileSync(
+      output.getRelativePath(this.directory),
+      this.generateToString({
+        inputs,
+        output,
+        enableGeneratorRule,
+        generatorRule,
+      }),
+    );
   }
 
-  generateToString(): string {
+  /** Returns contents of generated ninja file. Use only for testing. */
+  generateToString({ inputs, output, enableGeneratorRule, generatorRule }: {
+    inputs?: Files;
+    output?: File;
+    enableGeneratorRule?: boolean;
+    generatorRule?: Rule;
+  }): string {
+    output = output ?? this.file("build.ninja");
+    inputs = inputs ?? [];
+    enableGeneratorRule = enableGeneratorRule ?? true;
+
+    if (enableGeneratorRule) {
+      if (generatorRule == null) {
+        generatorRule = this.rule({
+          name: "ningen",
+          command: "$binary",
+          binary: this.file("BUILD.ts"),
+          description: "Regenerating Ninja file",
+          generator: true,
+        });
+      }
+
+      if (!generatorRule.generator) {
+        throw new Error(`${generatorRule.name} is not a generator rule`);
+      }
+
+      this.build({
+        rule: generatorRule,
+        inputs,
+        outputs: [output],
+      });
+    }
+
     const generator = new Generator(this.directory);
     generator.write(pools, rules, targets);
     return generator.toString();
