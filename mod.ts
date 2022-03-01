@@ -215,16 +215,6 @@ export class Ningen {
     return results;
   }
 
-  /**
-   * Imports other `BUILD.ts` files. Convenience function, if you want to
-   * import other files using a glob.
-   */
-  async import(files: Files) {
-    for (const file of files) {
-      await import(file.getAbsolutePath());
-    }
-  }
-
   generate(
     filename?: string,
   ) {
