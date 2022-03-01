@@ -34,6 +34,7 @@ export class Generator {
     const allTargetsAreDefault = targets.every((t) => t.isDefault);
     if (!allTargetsAreDefault) {
       targets.filter((t) => t.isDefault).forEach((t) => this.writeDefault(t));
+      this.newline();
     }
   }
 
