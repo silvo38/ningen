@@ -30,6 +30,11 @@ export class Generator {
       this.writeTarget(target);
       this.newline();
     }
+
+    const allTargetsAreDefault = targets.every((t) => t.isDefault);
+    if (!allTargetsAreDefault) {
+      targets.filter((t) => t.isDefault).forEach((t) => this.writeDefault(t));
+    }
   }
 
   writePool(pool: Pool) {
@@ -98,6 +103,12 @@ export class Generator {
     }
 
     this.writeVars(target.vars);
+  }
+
+  private writeDefault(target: Target) {
+    target.outputs.map((f) => f.getRelativePath(this.directory)).forEach(
+      (output) => this.addLine(`default ${output}`),
+    );
   }
 
   private writePoolAssignment(pool: Pool | "console" | "") {

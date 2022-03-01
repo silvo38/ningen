@@ -469,3 +469,64 @@ build o1: ttt i1
 `.trim(),
   );
 });
+
+Deno.test("generate: isDefault: non-default targets don't get default statements", () => {
+  ng.reset();
+  ng.build({
+    rule: testRule,
+    inputs: ng.files("i1"),
+    outputs: ng.files("o1"),
+    isDefault: true,
+  });
+  ng.build({
+    rule: testRule,
+    inputs: ng.files("i2"),
+    outputs: ng.files("o2"),
+    // isDefault omitted (should be true)
+  });
+  ng.build({
+    rule: testRule,
+    inputs: ng.files("i3"),
+    outputs: ng.files("o3"),
+    isDefault: false,
+  });
+
+  assertEquals(
+    ng.generateToString().trim(),
+    `
+build o1: ttt i1
+
+build o2: ttt i2
+
+build o3: ttt i3
+
+default o1
+default o2
+`.trim(),
+  );
+});
+
+Deno.test("generate: isDefault: when everything is default, no default statements get printed", () => {
+  ng.reset();
+  ng.build({
+    rule: testRule,
+    inputs: ng.files("i1"),
+    outputs: ng.files("o1"),
+    isDefault: true,
+  });
+  ng.build({
+    rule: testRule,
+    inputs: ng.files("i2"),
+    outputs: ng.files("o2"),
+    // isDefault omitted (should be true)
+  });
+
+  assertEquals(
+    ng.generateToString().trim(),
+    `
+build o1: ttt i1
+
+build o2: ttt i2
+`.trim(),
+  );
+});

@@ -38,6 +38,7 @@ export class Target {
     readonly implicit: Files,
     readonly vars: Vars,
     readonly pool: Pool | "console" | "" | null,
+    readonly isDefault: boolean,
   ) {}
 }
 
@@ -107,7 +108,7 @@ export class Ningen {
   }
 
   build(
-    { rule, inputs, outputs, vars, pool }: {
+    { rule, inputs, outputs, vars, pool, isDefault }: {
       /** The rule to invoke. */
       rule: Rule;
       /** The input files to build. */
@@ -121,12 +122,25 @@ export class Ningen {
        * to override the default pool defined for the rule.
        */
       pool?: Pool | "";
+      /**
+       * Optional, if true (or omitted) target will be marked "default", i.e.
+       * running `ninja` without any arguments will build the target.
+       */
+      isDefault?: boolean;
     },
   ): Target {
     const implicit = rule.srcs;
     vars = vars ?? {};
 
-    const t = new Target(rule, inputs, outputs, implicit, vars, pool ?? null);
+    const t = new Target(
+      rule,
+      inputs,
+      outputs,
+      implicit,
+      vars,
+      pool ?? null,
+      isDefault ?? true,
+    );
     targets.push(t);
     return t;
   }
