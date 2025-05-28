@@ -137,8 +137,10 @@ In addition, there are some extra ones defined for ningen:
 
 ## Developer notes
 
-Run `deno test` to run the unit tests.
+Run `just test` to run the unit tests.
 
-Run `./test.sh` to run the unit tests, and test the example folders.
+Run `just examples` to test the example folders.
+
+Run `just presubmit` to test everything.
 
 See [RELEASING.md] for instructions on deploying a new release.
