@@ -1,5 +1,5 @@
 import { assertEquals, assertThrows, path } from "./deps.ts";
-import { Files } from "./file.ts";
+import type { Files } from "./file.ts";
 import { Ningen } from "./mod.ts";
 
 const root = path.dirname(path.fromFileUrl(import.meta.url));

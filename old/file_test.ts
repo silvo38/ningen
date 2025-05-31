@@ -1,5 +1,5 @@
 import { assertEquals, assertThrows } from "./deps.ts";
-import { Files } from "./file.ts";
+import type { Files } from "./file.ts";
 import { Ningen } from "./mod.ts";
 
 function getPaths(files: Files) {

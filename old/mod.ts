@@ -1,5 +1,5 @@
 import { path } from "./deps.ts";
-import { File, Files } from "./file.ts";
+import { File, type Files } from "./file.ts";
 import { Generator } from "./generate.ts";
 import { fs } from "./deps.ts";
 import { sorted } from "./util.ts";

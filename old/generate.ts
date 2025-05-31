@@ -1,4 +1,4 @@
-import { Pool, Rule, Target, Vars } from "./mod.ts";
+import type { Pool, Rule, Target, Vars } from "./mod.ts";
 import { addLeadingDotSlash, sorted } from "./util.ts";
 import { path } from "./deps.ts";
 
