@@ -1,4 +1,4 @@
-import type { Target } from "./mod.ts";
+import type { Rule } from "./mod.ts";
 
 /**
  * Returns a sorted copy of an iterable. Optionally provide a `keyFn` that will
@@ -27,11 +27,7 @@ export function sorted<T>(
   return copy;
 }
 
-/** Returns the name of the rule associated with the given build target. */
-export function getTargetRuleName(target: Target): string {
-  if (typeof target.rule === "string") {
-    return target.rule;
-  } else {
-    return target.rule.name;
-  }
+/** Returns the name of the rule. */
+export function getRuleName(rule: string | Rule): string {
+  return typeof rule === "string" ? rule : rule.name;
 }

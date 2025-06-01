@@ -1,4 +1,4 @@
-import { getTargetRuleName, sorted } from "./util.ts";
+import { getRuleName, sorted } from "./util.ts";
 import { assertEquals, assertStrictEquals } from "@std/assert";
 
 Deno.test("util: sorted: no keyFn", () => {
@@ -22,17 +22,7 @@ Deno.test("util: sorted: keyFn", () => {
   );
 });
 
-Deno.test("getTargetRuleName", () => {
-  assertStrictEquals(
-    getTargetRuleName({ rule: "foo", srcs: "srcs", out: "out" }),
-    "foo",
-  );
-  assertStrictEquals(
-    getTargetRuleName({
-      rule: { name: "foo", cmd: "cmd" },
-      srcs: "srcs",
-      out: "out",
-    }),
-    "foo",
-  );
+Deno.test("getRuleName", () => {
+  assertStrictEquals(getRuleName("foo"), "foo");
+  assertStrictEquals(getRuleName({ name: "foo", cmd: "cmd" }), "foo");
 });

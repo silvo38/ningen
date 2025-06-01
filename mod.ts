@@ -1,5 +1,5 @@
 import { Generator } from "./generator.ts";
-import { getTargetRuleName } from "./util.ts";
+import { getRuleName } from "./util.ts";
 
 /** The definition of a Ninja rule.  */
 export interface Rule {
@@ -12,6 +12,7 @@ export interface Rule {
   /** Description printed when the rule is being run. */
   desc?: string;
 
+  /** Implicit deps added to every build target using this rule. */
   deps?: string[];
 }
 
@@ -25,6 +26,13 @@ export interface Target {
 
   /** Output files produced by the build. Appears in `$out` in the command. */
   out: string | string[];
+
+  /**
+   * Implicit deps needed by the build rule. These will not appear in the `$in`
+   * variable in the build command, but will cause the target to be rebuilt if
+   * they change.
+   */
+  deps?: string[];
 }
 
 /** Collects all registered rules. */
@@ -45,7 +53,7 @@ const allTargets: Target[] = [];
 
 /** Defines a new Ninja build target. */
 export function build(target: Target) {
-  const rule = getTargetRuleName(target);
+  const rule = getRuleName(target.rule);
   if (!allRules.has(rule)) {
     throw new Error(`Rule does not exist: ${rule}`);
   }
@@ -60,12 +68,7 @@ export function generate() {
 
 /** Generates and returns the ninja build file as a string. */
 export function generateString(): string {
-  const generator = new Generator();
-  generator.write({
-    rules: [...allRules.values()],
-    targets: allTargets,
-  });
-  return generator.toString();
+  return new Generator(allRules, allTargets).toString();
 }
 
 /** Export globals for unit testing. */
