@@ -1,5 +1,5 @@
 import type { Rule, Target } from "./mod.ts";
-import { sorted } from "./util.ts";
+import { getTargetRuleName, sorted } from "./util.ts";
 
 /** Generates a ninja build file. */
 export class Generator {
@@ -43,15 +43,6 @@ export class Generator {
 
   private addLine(line: string, indent = 0) {
     this.output.push("  ".repeat(indent) + line);
-  }
-}
-
-/** Returns the name of the rule associated with the given build target. */
-function getTargetRuleName(target: Target): string {
-  if (typeof target.rule === "string") {
-    return target.rule;
-  } else {
-    return target.rule.name;
   }
 }
 
