@@ -11,9 +11,18 @@ describe("Ningen", () => {
   });
 
   it("can add a new rule", () => {
+    rule({ name: "foo", cmd: "cmd" });
+    assertEquals(allRules.get("foo"), { name: "foo", cmd: "cmd" });
+  });
+
+  it("the return value of a rule can create build targets", () => {
     const myRule = rule({ name: "foo", cmd: "cmd" });
-    assertEquals(myRule, { name: "foo", cmd: "cmd" });
-    assertEquals(allRules.get("foo"), myRule);
+    myRule({ srcs: "srcs1", out: "out1" });
+    myRule({ srcs: "srcs2", out: "out2" });
+    assertEquals(allTargets, [
+      { out: "out1", rule: "foo", srcs: "srcs1" },
+      { out: "out2", rule: "foo", srcs: "srcs2" },
+    ]);
   });
 
   it("throws when added duplicate rule", () => {
@@ -28,13 +37,6 @@ describe("Ningen", () => {
   it("can add a new build target by name", () => {
     rule({ name: "foo", cmd: "cmd" });
     const target = { rule: "foo", srcs: "srcs", out: "out" };
-    build(target);
-    assertEquals(allTargets, [target]);
-  });
-
-  it("can add a new build target using a rule object", () => {
-    const myRule = rule({ name: "foo", cmd: "cmd" });
-    const target = { rule: myRule, srcs: "srcs", out: "out" };
     build(target);
     assertEquals(allTargets, [target]);
   });

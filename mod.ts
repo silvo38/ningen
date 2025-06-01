@@ -18,8 +18,8 @@ export interface Rule {
 
 /** The definition of a Ninja build target. */
 export interface Target {
-  /** The rule used to build the target. Can be an object or the rule name. */
-  rule: Rule | string;
+  /** The name of the rule used to build the target. */
+  rule: string;
 
   /** Input files needed for the build. Appears in `$in` in the command. */
   srcs: string | string[];
@@ -35,17 +35,28 @@ export interface Target {
   deps?: string[];
 }
 
+/** A target definition, with an implicit rule. */
+export type TargetDef = Omit<Target, "rule">;
+
+/** A function which will add a build target, using a predetermined rule. */
+export type BuildFn = (targetDef: TargetDef) => void;
+
 /** Collects all registered rules. */
 const allRules: Map<string, Rule> = new Map();
 
-/** Defines and returns a new Ninja rule. */
-export function rule(rule: Rule): Rule {
+/**
+ * Defines a new Ninja rule. The returned value is a function which, when
+ * invoked, will create a new build target using the rule.
+ */
+export function rule(rule: Rule): BuildFn {
   if (allRules.has(rule.name)) {
     throw new Error(`Duplicate rule: ${rule.name}`);
   }
   // TODO: Check for dupes.
   allRules.set(rule.name, rule);
-  return rule;
+
+  // Return a function which binds the rule name for you.
+  return (targetDef) => build({ rule: rule.name, ...targetDef });
 }
 
 /** Collects all registered targets. */
