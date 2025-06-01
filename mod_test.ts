@@ -32,6 +32,13 @@ describe("Ningen", () => {
     assertEquals(allTargets, [target]);
   });
 
+  it("can add a new build target using a rule object", () => {
+    const myRule = rule({ name: "foo", cmd: "cmd" });
+    const target = { rule: myRule, srcs: "srcs", out: "out" };
+    build(target);
+    assertEquals(allTargets, [target]);
+  });
+
   it("throws when added target with unknown rule", () => {
     assertThrows(
       () =>
