@@ -61,9 +61,10 @@ export function build(target: Target) {
   allTargets.push(target);
 }
 
-/** Writes the ninja build file. */
+/** Generates the build.ninja file. */
 export function generate() {
-  generateString();
+  const contents = generateString();
+  Deno.writeTextFileSync("build.ninja", contents);
 }
 
 /** Generates and returns the ninja build file as a string. */
