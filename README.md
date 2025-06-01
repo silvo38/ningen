@@ -109,6 +109,24 @@ compile({
 });
 ```
 
+## Globs
+
+Import the `glob()` function to glob files together or to use in for-loops:
+
+```ts
+bundle({
+  srcs: glob("*.js"),
+  out: "bundle.js",
+});
+
+for (const src of glob("*.c")) {
+  compile({
+    srcs: src,
+    out: src + ".o",
+  });
+}
+```
+
 ## Generating the `build.ninja` file
 
 Make sure you call `generate()` at the end of your file! This will generate the

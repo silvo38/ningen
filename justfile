@@ -1,5 +1,5 @@
 test:
-  deno test *.ts
+  deno test --allow-read *.ts
   (cd example && deno test -A)
 
 fix:

@@ -1,3 +1,5 @@
+export { glob } from "./glob.ts";
+
 import { Generator } from "./generator.ts";
 import { getRuleName } from "./util.ts";
 
@@ -74,13 +76,8 @@ export function build(target: Target) {
 
 /** Generates the build.ninja file. */
 export function generate() {
-  const contents = generateString();
+  const contents = new Generator(allRules, allTargets).toString();
   Deno.writeTextFileSync("build.ninja", contents);
-}
-
-/** Generates and returns the ninja build file as a string. */
-export function generateString(): string {
-  return new Generator(allRules, allTargets).toString();
 }
 
 /** Export globals for unit testing. */
