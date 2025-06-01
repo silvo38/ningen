@@ -14,17 +14,51 @@ describe("Generator", () => {
   });
 
   it("generates a basic rule", () => {
-    generator.write({
-      rules: [{
-        name: "myRule",
-        cmd: "my-cmd $in $out",
-      }],
+    generator.writeRule({
+      name: "myRule",
+      cmd: "my-cmd $in $out",
     });
     assertContents(
       generator.toString(),
       `
       rule myRule
         command = my-cmd $in $out`,
+    );
+  });
+
+  it("rules are sorted by name", () => {
+    generator.write({
+      rules: [
+        { name: "rule2", cmd: "cmd2" },
+        { name: "rule1", cmd: "cmd1" },
+      ],
+      targets: [],
+    });
+    assertContents(
+      generator.toString(),
+      `
+      rule rule1
+        command = cmd1
+
+      rule rule2
+        command = cmd2`,
+    );
+  });
+
+  it("targets are printed in order", () => {
+    generator.write({
+      targets: [
+        { rule: "rule2", srcs: "src2", out: "out2" },
+        { rule: "rule1", srcs: "src1", out: "out1" },
+      ],
+      rules: [],
+    });
+    assertContents(
+      generator.toString(),
+      `
+      build out2: rule2 src2
+
+      build out1: rule1 src1`,
     );
   });
 });
