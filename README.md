@@ -22,7 +22,7 @@ To create your `BUILD.ts` file, run the following Bash script:
 touch BUILD.ts
 chmod +x BUILD.ts
 cat <<EOF > BUILD.ts
-#!/usr/bin/env -S deno run --allow-write
+#!/usr/bin/env -S deno run --allow-read --allow-write
 import { generate, rule } from "jsr:@silvo38/ningen@0.0.8";
 
 // Define rules here.

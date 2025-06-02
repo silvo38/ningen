@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-write
+#!/usr/bin/env -S deno run --allow-read --allow-write
 
 // Example BUILD.ts file showing off some of its features. Also serves as an
 // integration test.
