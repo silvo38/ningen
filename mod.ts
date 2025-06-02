@@ -16,6 +16,9 @@ export interface Rule {
 
   /** Implicit deps added to every build target using this rule. */
   deps?: string[];
+
+  /** Optional build pool in which this rule should be run. */
+  pool?: "console" | Pool;
 }
 
 /** The definition of a Ninja build target. */
@@ -35,6 +38,12 @@ export interface Target {
    * they change.
    */
   deps?: string[];
+}
+
+/** The definition of a Ninja build pool. */
+export interface Pool {
+  name: string;
+  depth: number;
 }
 
 /** A target definition, with an implicit rule. */
@@ -74,9 +83,23 @@ export function build(target: Target) {
   allTargets.push(target);
 }
 
+/** Collects all registered pools. */
+const allPools: Map<string, Pool> = new Map();
+
+/** Defines a new Ninja build pool. */
+export function pool(pool: Pool) {
+  if (pool.name === "console") {
+    throw new Error(`The console pool cannot be redefined`);
+  }
+  if (allPools.has(pool.name)) {
+    throw new Error(`Duplicate pool: ${pool.name}`);
+  }
+  allPools.set(pool.name, pool);
+}
+
 /** Generates the build.ninja file. */
 export function generate() {
-  const contents = new Generator(allRules, allTargets).toString();
+  const contents = new Generator(allRules, allTargets, allPools).toString();
   Deno.writeTextFileSync("build.ninja", contents);
 }
 
@@ -84,4 +107,5 @@ export function generate() {
 export const EXPORT_FOR_TESTING = {
   allRules,
   allTargets,
+  allPools,
 };

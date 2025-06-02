@@ -1,26 +1,24 @@
-import type { Rule, Target } from "./mod.ts";
+import type { Pool, Rule, Target } from "./mod.ts";
 import { getRuleName, sorted } from "./util.ts";
 
 /** Generates a ninja build file. */
 export class Generator {
   private readonly output: string[] = [];
-  private readonly rules: Map<string, Rule>;
+  private readonly rules: ReadonlyMap<string, Rule>;
+  private readonly pools: ReadonlyMap<string, Pool>;
 
   constructor(
-    rules: readonly Rule[] | Map<string, Rule>,
+    rules: readonly Rule[] | ReadonlyMap<string, Rule>,
     private readonly targets: readonly Target[],
+    pools: readonly Pool[] | ReadonlyMap<string, Pool>,
   ) {
-    if (rules instanceof Map) {
-      this.rules = rules;
-    } else {
-      // Reconstruct the rules map. (This is mostly just for convenience in unit
-      // tests. The prod code passes in a Map.)
-      this.rules = new Map();
-      for (const rule of rules) {
-        this.rules.set(rule.name, rule);
-      }
-    }
+    this.rules = toMap(rules);
+    this.pools = toMap(pools);
 
+    for (const pool of sorted(this.pools.values(), (pool) => pool.name)) {
+      this.writePool(pool);
+      this.newline();
+    }
     for (const rule of sorted(this.rules.values(), (rule) => rule.name)) {
       this.writeRule(rule);
       this.newline();
@@ -35,10 +33,19 @@ export class Generator {
     return this.output.join("\n");
   }
 
+  private writePool(pool: Pool) {
+    this.addLine(`pool ${pool.name}`);
+    this.addLine(`depth = ${pool.depth}`, 1);
+  }
+
   private writeRule(rule: Rule) {
     // TODO: Escaping.
     this.addLine(`rule ${rule.name}`);
     this.addLine(`command = ${rule.cmd}`, 1);
+    if (rule.pool) {
+      const poolName = rule.pool === "console" ? "console" : rule.pool.name;
+      this.addLine(`pool = ${poolName}`, 1);
+    }
   }
 
   private writeTarget(target: Target) {
@@ -93,4 +100,22 @@ function toStringArray(value: string | readonly string[]): readonly string[] {
   } else {
     return value;
   }
+}
+
+/**
+ * Returns the given value as a map. If the input is a map, it is returned
+ * directly. If it is an array, it is converted to a map using the `name` field
+ * as a key.
+ */
+function toMap<T extends { name: string }>(
+  value: readonly T[] | ReadonlyMap<string, T>,
+): ReadonlyMap<string, T> {
+  if (value instanceof Map) {
+    return value;
+  }
+  const map = new Map();
+  for (const element of value as readonly T[]) {
+    map.set(element.name, element);
+  }
+  return map;
 }

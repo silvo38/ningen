@@ -4,28 +4,39 @@ import { assertStrictEquals } from "@std/assert";
 
 describe("Generator", () => {
   it("generates an empty file", () => {
-    assertContents(new Generator([], []).toString(), "");
+    assertContents(new Generator([], [], []).toString(), "");
   });
 
   it("generates rule definitions", () => {
-    const generator = new Generator([{
-      name: "myRule",
-      cmd: "my-cmd $in $out",
-      deps: ["should", "not", "appear"],
-    }], []);
+    const generator = new Generator(
+      [{
+        name: "myRule",
+        cmd: "my-cmd $in $out",
+        desc: "My description",
+        pool: "console",
+        deps: ["should", "not", "appear"],
+      }],
+      [],
+      [],
+    );
     assertContents(
       generator.toString(),
       `
       rule myRule
-        command = my-cmd $in $out`,
+        command = my-cmd $in $out
+        pool = console`,
     );
   });
 
   it("rules are sorted by name", () => {
-    const generator = new Generator([
-      { name: "rule2", cmd: "cmd2" },
-      { name: "rule1", cmd: "cmd1" },
-    ], []);
+    const generator = new Generator(
+      [
+        { name: "rule2", cmd: "cmd2" },
+        { name: "rule1", cmd: "cmd1" },
+      ],
+      [],
+      [],
+    );
     assertContents(
       generator.toString(),
       `
@@ -42,7 +53,7 @@ describe("Generator", () => {
       { name: "foo", cmd: "cmd" },
     ], [
       { rule: "foo", srcs: ["src1", "src2"], out: ["out1", "out2"] },
-    ]);
+    ], []);
     assertContents(
       generator.toString(),
       `
@@ -63,7 +74,7 @@ describe("Generator", () => {
         out: ["out1", "out2"],
         deps: ["dep2", "dep4"],
       },
-    ]);
+    ], []);
     assertContents(
       generator.toString(),
       `
@@ -80,7 +91,7 @@ describe("Generator", () => {
     ], [
       { rule: "foo", srcs: "src2", out: "out2" },
       { rule: "foo", srcs: "src1", out: "out1" },
-    ]);
+    ], []);
     assertContents(
       generator.toString(),
       `
@@ -90,6 +101,18 @@ describe("Generator", () => {
       build out2: foo src2
 
       build out1: foo src1`,
+    );
+  });
+
+  it("generates pools", () => {
+    const generator = new Generator([], [], [
+      { name: "foo", depth: 2 },
+    ]);
+    assertContents(
+      generator.toString(),
+      `
+      pool foo
+        depth = 2`,
     );
   });
 });

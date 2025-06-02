@@ -127,6 +127,28 @@ for (const src of glob("*.c")) {
 }
 ```
 
+## Pools
+
+You can use the `pool()` function to define a new Ninja build pool, which
+controls the amount of parallelism. There is also the special `console` pool
+which is predefined, which will run one build task at a time.
+
+```ts
+const myPool = pool({ name: "myPool", depth: 4 });
+
+rule({
+  name: "myRule",
+  pool: myPool,
+  // ...
+});
+
+rule({
+  name: "expensiveMultithreadedCompilation",
+  pool: "console",
+  // ...
+});
+```
+
 ## Generating the `build.ninja` file
 
 Make sure you call `generate()` at the end of your file! This will generate the

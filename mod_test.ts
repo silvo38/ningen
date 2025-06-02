@@ -1,13 +1,14 @@
 import { beforeEach, describe, it } from "@std/testing/bdd";
 import { assertEquals, assertThrows } from "@std/assert";
-import { build, EXPORT_FOR_TESTING, rule } from "./mod.ts";
+import { build, EXPORT_FOR_TESTING, pool, rule } from "./mod.ts";
 
-const { allRules, allTargets } = EXPORT_FOR_TESTING;
+const { allRules, allTargets, allPools } = EXPORT_FOR_TESTING;
 
 describe("Ningen", () => {
   beforeEach(() => {
     allRules.clear();
     allTargets.length = 0;
+    allPools.clear();
   });
 
   it("can add a new rule", () => {
@@ -34,14 +35,14 @@ describe("Ningen", () => {
     );
   });
 
-  it("can add a new build target by name", () => {
+  it("can add a new build target", () => {
     rule({ name: "foo", cmd: "cmd" });
     const target = { rule: "foo", srcs: "srcs", out: "out" };
     build(target);
     assertEquals(allTargets, [target]);
   });
 
-  it("throws when added target with unknown rule", () => {
+  it("throws when adding target with unknown rule", () => {
     assertThrows(
       () =>
         build({
@@ -51,6 +52,28 @@ describe("Ningen", () => {
         }),
       Error,
       "Rule does not exist: foo",
+    );
+  });
+
+  it("can add a new pool", () => {
+    pool({ name: "foo", depth: 2 });
+    assertEquals(allPools.get("foo"), { name: "foo", depth: 2 });
+  });
+
+  it("throws when adding a duplicate pool", () => {
+    pool({ name: "foo", depth: 2 });
+    assertThrows(
+      () => pool({ name: "foo", depth: 2 }),
+      Error,
+      "Duplicate pool: foo",
+    );
+  });
+
+  it("throws when adding a console pool", () => {
+    assertThrows(
+      () => pool({ name: "console", depth: 1 }),
+      Error,
+      "The console pool cannot be redefined",
     );
   });
 });
