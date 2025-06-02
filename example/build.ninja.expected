@@ -1,5 +1,6 @@
 rule wordcount
   command = wc $in > $out
+  pool = console
 
 build count1.out: wordcount input1.txt
 

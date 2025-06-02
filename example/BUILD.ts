@@ -12,6 +12,7 @@ const wordCount = rule({
   name: "wordcount",
   cmd: "wc $in > $out",
   desc: "Counting words",
+  pool: "console",
 });
 
 wordCount({
