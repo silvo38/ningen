@@ -23,7 +23,7 @@ touch BUILD.ts
 chmod +x BUILD.ts
 cat <<EOF > BUILD.ts
 #!/usr/bin/env -S deno run --allow-read --allow-write
-import { generate, rule } from "jsr:@silvo38/ningen@0.0.8";
+import { generate, rule } from "jsr:@silvo38/ningen@0.0.9";
 
 // Define rules here.
 
@@ -35,7 +35,7 @@ Or if you would rather copy and paste just the file contents:
 
 ```ts
 #!/usr/bin/env -S deno run --allow-write
-import { generate, rule } from "jsr:@silvo38/ningen@0.0.8";
+import { generate, rule } from "jsr:@silvo38/ningen@0.0.9";
 
 // Define rules here.
 
