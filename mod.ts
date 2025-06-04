@@ -8,7 +8,11 @@ export interface Rule {
   /** The name of the rule. */
   name: string;
 
-  /** The command to run. Use `$in` and $out` to reference the */
+  /**
+   * The command to run. Use `$in` and $out` to reference the input (`srcs`) and
+   * output (`out`) declared by the build target. You can also reference
+   * individual `vars` passed to the rule, e.g. `$foo`.
+   */
   cmd: string;
 
   /** Description printed when the rule is being run. */
@@ -19,6 +23,13 @@ export interface Rule {
 
   /** Optional build pool in which this rule should be run. */
   pool?: "console" | Pool;
+
+  /**
+   * Optional variables to define for the rule. These can be accessed from `cmd`
+   * like so: `$foo`. Each key is a variable name, and the value is the default
+   * value to use, if not overridden by the build target that invokes this rule.
+   */
+  vars?: Vars;
 }
 
 /** The definition of a Ninja build target. */
@@ -38,6 +49,12 @@ export interface Target {
    * they change.
    */
   deps?: string[];
+
+  /**
+   * Optional variables to pass to the rule. This will override default values
+   * set by the rule.
+   */
+  vars?: Vars;
 }
 
 /** The definition of a Ninja build pool. */
@@ -45,6 +62,12 @@ export interface Pool {
   name: string;
   depth: number;
 }
+
+/**
+ * Variables to pass to the build command for a rule. Maps from variable name to
+ * value. The command can access each variable using a dollar sign: `$foo`.
+ */
+export type Vars = Record<string, string>;
 
 /** A target definition, with an implicit rule. */
 export type TargetDef = Omit<Target, "rule">;

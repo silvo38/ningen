@@ -1,3 +1,6 @@
+rule echo
+  command = echo $name > $out
+
 rule wordcount
   command = wc $in > $out
   pool = console
@@ -5,3 +8,9 @@ rule wordcount
 build count1.out: wordcount input1.txt
 
 build count2.out: wordcount input2.txt
+
+build foo.out: echo
+  word = foo
+
+build bar.out: echo
+  word = bar

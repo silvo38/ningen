@@ -15,6 +15,7 @@ describe("Generator", () => {
         desc: "My description",
         pool: "console",
         deps: ["should", "not", "appear"],
+        vars: { should: "1", not: "2", appear: "3" },
       }],
       [],
       [],
@@ -61,6 +62,45 @@ describe("Generator", () => {
         command = cmd
 
       build out1 out2: foo src1 src2`,
+    );
+  });
+
+  it("build srcs can be empty", () => {
+    const generator = new Generator([
+      { name: "foo", cmd: "cmd" },
+    ], [
+      { rule: "foo", srcs: [], out: "out", vars: { v: "1" } },
+    ], []);
+    assertContents(
+      generator.toString(),
+      `
+      rule foo
+        command = cmd
+
+      build out: foo
+        v = 1`,
+    );
+  });
+
+  it("build target includes vars from rule and target", () => {
+    const generator = new Generator([
+      { name: "foo", cmd: "cmd", vars: { a: "defaultA", b: "defaultB" } },
+    ], [{
+      rule: "foo",
+      srcs: [],
+      out: "out",
+      vars: { b: "overriddenB", c: "newC" },
+    }], []);
+    assertContents(
+      generator.toString(),
+      `
+      rule foo
+        command = cmd
+
+      build out: foo
+        a = defaultA
+        b = overriddenB
+        c = newC`,
     );
   });
 

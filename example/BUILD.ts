@@ -25,4 +25,28 @@ wordCount({
   out: "count2.out",
 });
 
+// Echos the given word. Demonstrates how to use and override variables.
+const echo = rule({
+  name: "echo",
+  cmd: "echo $name > $out",
+  vars: {
+    word: "foo",
+  },
+});
+
+echo({
+  srcs: [],
+  out: "foo.out",
+  // Uses default value of "foo".
+});
+
+echo({
+  srcs: [],
+  out: "bar.out",
+  // Overrides default word to "bar".
+  vars: {
+    word: "bar",
+  },
+});
+
 generate();

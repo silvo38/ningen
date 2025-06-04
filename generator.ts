@@ -1,4 +1,4 @@
-import type { Pool, Rule, Target } from "./mod.ts";
+import type { Pool, Rule, Target, Vars } from "./mod.ts";
 import { getRuleName, sorted } from "./util.ts";
 
 /** Generates a ninja build file. */
@@ -65,11 +65,25 @@ export class Generator {
     }
     deps.sort();
 
-    let line = `build ${outputs}: ${rule.name} ${inputs}`;
+    let line = `build ${outputs}: ${rule.name}`;
+    if (inputs) {
+      line += ` ${inputs}`;
+    }
     if (deps.length > 0) {
       line += " | " + deps.join(" ");
     }
     this.addLine(line);
+
+    if (rule.vars || target.vars) {
+      this.writeVars({ ...rule.vars, ...target.vars });
+    }
+  }
+
+  private writeVars(vars: Vars) {
+    for (const key of sorted(Object.keys(vars))) {
+      const value = vars[key];
+      this.addLine(`${key} = ${value}`, 1);
+    }
   }
 
   private getRule(rule: string | Rule): Rule {

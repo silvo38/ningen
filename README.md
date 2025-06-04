@@ -149,6 +149,33 @@ rule({
 });
 ```
 
+## Vars
+
+Custom variables can be used in the `cmd` of a rule. You access them using a
+dollar sign, e.g. `$foo`. You can set default values for each variable in the
+rule definition, and you can override those values in each build target, e.g.:
+
+```ts
+const compile = rule({
+  name: "gcc",
+  command: "gcc $cflags -c $in -o $out",
+  vars: { cflags: "-Wall -Werror" },
+});
+
+// This uses the default $cflags var.
+compile({
+  srcs: "foo.c",
+  out: "foo.o",
+});
+
+// This overrides the $cflags var.
+compile({
+  srcs: "bar.c",
+  out: "bar.o",
+  vars: { cflags: "-Wall" },
+});
+```
+
 ## Generating the `build.ninja` file
 
 Make sure you call `generate()` at the end of your file! This will generate the
