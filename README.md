@@ -201,3 +201,5 @@ If that works, commit to the git repo:
 ```sh
 jj commit -m "Release version x.y.z"
 ```
+
+and then publish via `just publish`.
