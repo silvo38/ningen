@@ -25,6 +25,7 @@ describe("Generator", () => {
       `
       rule myRule
         command = my-cmd $in $out
+        description = My description
         pool = console`,
     );
   });

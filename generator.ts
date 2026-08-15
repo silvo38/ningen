@@ -42,6 +42,9 @@ export class Generator {
     // TODO: Escaping.
     this.addLine(`rule ${rule.name}`);
     this.addLine(`command = ${rule.cmd}`, 1);
+    if (rule.desc) {
+      this.addLine(`description = ${rule.desc}`, 1);
+    }
     if (rule.pool) {
       const poolName = rule.pool === "console" ? "console" : rule.pool.name;
       this.addLine(`pool = ${poolName}`, 1);

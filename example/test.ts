@@ -21,14 +21,17 @@ Deno.test("IntegrationTest", async (t) => {
   });
 
   await t.step("check output files", async () => {
-    assertStrictEquals(
-      await Deno.readTextFile("count1.out"),
-      "       2       5      24 input1.txt\n",
+    const parseWordCountOutput = (s: string) =>
+      s.trim().split(" ").filter((s) => s !== "");
+
+    assertEquals(
+      parseWordCountOutput(await Deno.readTextFile("count1.out")),
+      ["2", "5", "24", "input1.txt"],
       "count1.out is incorrect",
     );
-    assertStrictEquals(
-      await Deno.readTextFile("count2.out"),
-      "       2       2      12 input2.txt\n",
+    assertEquals(
+      parseWordCountOutput(await Deno.readTextFile("count2.out")),
+      ["2", "2", "12", "input2.txt"],
       "count2.out is incorrect",
     );
   });

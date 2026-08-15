@@ -57,7 +57,8 @@ Here is an example:
 ```ts
 const compile = rule({
   name: "cc",
-  command: "gcc -c $in -o $out",
+  cmd: "gcc -c $in -o $out",
+  desc: "gcc $out",
 });
 
 compile({
@@ -66,11 +67,16 @@ compile({
 });
 ```
 
+`desc` is optional, but lets you provide a shorter string when the command is
+being run (it might be helpful to include `$in` or `$out` so you can tell what
+file(s) are being compiled).
+
 This generates the following `build.ninja` file:
 
 ```
 rule cc
   command = gcc -c $in -o $out
+  description = gcc $out
 
 build foo.o: cc foo.c
 ```
@@ -153,7 +159,7 @@ rule definition, and you can override those values in each build target, e.g.:
 ```ts
 const compile = rule({
   name: "gcc",
-  command: "gcc $cflags -c $in -o $out",
+  cmd: "gcc $cflags -c $in -o $out",
   vars: { cflags: "-Wall -Werror" },
 });
 
