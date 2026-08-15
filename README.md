@@ -18,7 +18,7 @@ touch BUILD.ts
 chmod +x BUILD.ts
 cat <<EOF > BUILD.ts
 #!/usr/bin/env -S deno run --allow-read --allow-write
-import { generate, rule } from "jsr:@silvo38/ningen@0.1.0";
+import { generate, rule } from "jsr:@silvo38/ningen@0.1.1";
 
 // Define rules here.
 
@@ -30,7 +30,7 @@ Or if you would rather copy and paste just the file contents:
 
 ```ts
 #!/usr/bin/env -S deno run --allow-write
-import { generate, rule } from "jsr:@silvo38/ningen@0.1.0";
+import { generate, rule } from "jsr:@silvo38/ningen@0.1.1";
 
 // Define rules here.
 
@@ -181,3 +181,23 @@ compile({
 
 Make sure you call `generate()` at the end of your file! This will generate the
 `build.ninja` file. You need to run the `ninja` command yourself.
+
+## Development notes
+
+### Publishing
+
+Bump the version number using `deno bump-version`, e.g.
+`deno bump-version patch`. Then manually update this `README.md` file to use the
+new version number.
+
+Before creating the git commit, check that everything works using
+
+```sh
+just presubmit
+```
+
+If that works, commit to the git repo:
+
+```sh
+jj commit -m "Release version x.y.z"
+```
