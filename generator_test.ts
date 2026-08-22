@@ -1,4 +1,4 @@
-import { describe, it } from "@std/testing/bdd";
+import { describe, it } from "node:test";
 import { Generator } from "./generator.ts";
 import { assertStrictEquals } from "@std/assert";
 

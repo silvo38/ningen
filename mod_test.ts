@@ -1,4 +1,4 @@
-import { beforeEach, describe, it } from "@std/testing/bdd";
+import { beforeEach, describe, it } from "node:test";
 import { assertEquals, assertThrows } from "@std/assert";
 import { build, EXPORT_FOR_TESTING, pool, rule } from "./mod.ts";
 
