@@ -17,7 +17,7 @@ To create your `BUILD.ts` file, run the following Bash script:
 touch BUILD.ts
 chmod +x BUILD.ts
 cat <<EOF > BUILD.ts
-#!/usr/bin/env -S deno run --allow-read --allow-write
+#!/usr/bin/env -S deno run --allow-read --allow-write --allow-run
 import { generate, rule } from "jsr:@silvo38/ningen@0.1.1";
 
 // Define rules here.
@@ -179,8 +179,19 @@ compile({
 
 ## Generating the `build.ninja` file
 
-Make sure you call `generate()` at the end of your file! This will generate the
-`build.ninja` file. You need to run the `ninja` command yourself.
+Make sure you call `generate()` at the end of your file!
+
+The `BUILD.ts` file is executable, and by default it will generate the
+`build.ninja` file and also run `ninja` afterwards. If you don't want to run the
+ninja build yet, pass the `--no-build` flag:
+
+```sh
+# Generate build.ninja and runs ninja:
+./BUILD.ts
+
+# Generate build.ninja and don't run ninja:
+./BUILD.ts --no-build
+```
 
 ## Development notes
 

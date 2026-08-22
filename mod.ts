@@ -1,5 +1,6 @@
 export { glob } from "./glob.ts";
 
+import { parseArgs } from "@std/cli/parse-args";
 import { Generator } from "./generator.ts";
 import { getRuleName } from "./util.ts";
 
@@ -121,9 +122,29 @@ export function pool(pool: Pool) {
 }
 
 /** Generates the build.ninja file. */
-export function generate() {
+export async function generate() {
   const contents = new Generator(allRules, allTargets, allPools).toString();
   Deno.writeTextFileSync("build.ninja", contents);
+
+  const flags = parseArgs(Deno.args, {
+    boolean: ["build"],
+    negatable: ["build"],
+    default: { build: true },
+  });
+
+  if (flags.build) {
+    await runNinjaBuild();
+  }
+}
+
+async function runNinjaBuild() {
+  const command = new Deno.Command("ninja", {
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+  const child = command.spawn();
+  const status = await child.status;
+  Deno.exit(status.code);
 }
 
 /** Export globals for unit testing. */
